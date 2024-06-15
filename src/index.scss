@@ -76,10 +76,19 @@ button {
 }
 
 div {
-    margin: none auto;
+    margin: auto;
     padding: none;
     border: none;
     display: block;
+
+    &.dividerLine {
+        width: 75%;
+        height: 5px;
+        background-color: #047c44;
+        $verticalMargin: 2vw;
+        margin-top: $verticalMargin;
+        margin-bottom: $verticalMargin;
+    }
 }
 
 img {

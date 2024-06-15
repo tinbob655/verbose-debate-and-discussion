@@ -4,14 +4,16 @@ import { initializeApp } from "firebase/app";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_KEY,
-  authDomain: "verbose-debates.firebaseapp.com",
-  projectId: "verbose-debates",
-  storageBucket: "verbose-debates.appspot.com",
-  messagingSenderId: "1048499980348",
-  appId: "1:1048499980348:web:7557eefb07bb06373b5b39"
-};
+export function firebaseSetup() {
+  
+  const firebaseConfig = {
+    apiKey: process.env.REACT_APP_FIREBASE_KEY,
+    authDomain: "verbose-debates.firebaseapp.com",
+    projectId: "verbose-debates",
+    storageBucket: "verbose-debates.appspot.com",
+    messagingSenderId: "1048499980348",
+    appId: "1:1048499980348:web:7557eefb07bb06373b5b39"
+  };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+  initializeApp(firebaseConfig);
+};
