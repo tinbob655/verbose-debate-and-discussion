@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {getDoc, doc, getFirestore} from 'firebase/firestore';
+import QuestionResponse from './questionResponse.jsx';
 import './homeStyles.scss';
 
 class Home extends Component {
@@ -61,7 +62,7 @@ class Home extends Component {
 
                 <div className="dividerLine"></div>
 
-                <table style={{tableLayout: 'unset'}}>
+                <table style={{tableLayout: 'unset', padding: '2%'}}>
                     <thead>
                         <tr>
                             <td style={{width: '65%'}}>
@@ -86,6 +87,10 @@ class Home extends Component {
                                 <h2>
                                     Top responses:
                                 </h2>
+                                <QuestionResponse/>
+                                <QuestionResponse/>
+                                <QuestionResponse/>
+                                <QuestionResponse/>
                             </td>
                         </tr>
                     </thead>

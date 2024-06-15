@@ -7,3 +7,12 @@ div#todaysQuestionWrapper {
     padding-right: $horizontalPadding;
     border: #f7edd9 double 1vw;
 }
+
+div.questionResponseWrapper {
+    width: 100%;
+    border-radius: 20px;
+    height: min-content;
+    background-color: #f0d1b2;
+    border: #a89980 double 0.4vw;
+    margin-bottom: 1vh;
+}
