@@ -1,0 +1,9 @@
+div#todaysQuestionWrapper {
+    border-radius: 20px;
+    background-color: #f0d1b2;
+    width: 80%;
+    $horizontalPadding: 2vw;
+    padding-left: $horizontalPadding;
+    padding-right: $horizontalPadding;
+    border: #f7edd9 double 1vw;
+}
