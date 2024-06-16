@@ -1,18 +1,18 @@
 div#todaysQuestionWrapper {
     border-radius: 20px;
-    background-color: #f0d1b2;
+    background-color: #171b1b;
     width: 80%;
     $horizontalPadding: 2vw;
     padding-left: $horizontalPadding;
     padding-right: $horizontalPadding;
-    border: #f7edd9 double 1vw;
+    border: #ffffff solid 4px;
 }
 
 div.questionResponseWrapper {
     width: 100%;
     border-radius: 20px;
     height: min-content;
-    background-color: #f0d1b2;
-    border: #a89980 double 0.4vw;
+    background-color: #1c2221;
+    border: #d6e4e3 solid 3px;
     margin-bottom: 1vh;
 }

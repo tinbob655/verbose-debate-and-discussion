@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
 
 body {
-    background-color: #fae8d6;
+    background-color: #000000;
     padding: 0;
     margin: 0;
     border: none;
@@ -13,21 +13,21 @@ body {
 
 h1 {
     font-family: Raleway;
-    color: #038c4c;
+    color: #ffffff;
     font-size: 60px;
     font-weight: 750;
 }
 
 h2 {
     font-family: Raleway;
-    color: #36ad75;
+    color: #e0f5f8;
     font-size: 50px;
     font-weight: 600px;
 }
 
 h3 {
     font-family: Nunito;
-    color: #04361f;
+    color: #23a4ad;
     font-size: 22.5px;
     font-weight: 700;
 
@@ -42,7 +42,7 @@ h3 {
 
 p {
     font-family: Nunito;
-    color: #012212;
+    color: #85cfd3;
     font-size: 20px;
     font-weight: 600;
 }
@@ -84,7 +84,7 @@ div {
     &.dividerLine {
         width: 75%;
         height: 5px;
-        background-color: #047c44;
+        background-color: #05edf5;
         $verticalMargin: 2vw;
         margin-top: $verticalMargin;
         margin-bottom: $verticalMargin;
