@@ -11,6 +11,22 @@ import AllRoutes from './routes.jsx';
 import Header from './components/multi-page/header.jsx';
 import Footer from './components/multi-page/footer.jsx';
 
+export function today() {
+  let date = new Date();
+
+  //day
+  let day = date.getDate();
+
+  //month
+  let allMonths = ['january', 'february','march', 'april','may', 'june', 'july', 'august','september', 'october', 'november', 'december'];
+  let month = allMonths[date.getMonth()];
+
+  return {
+    day: day,
+    month: month,
+  };
+};
+
 //firebase init
 firebaseSetup();
 

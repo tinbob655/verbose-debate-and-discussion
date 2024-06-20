@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import {getDoc, doc, getFirestore} from 'firebase/firestore';
+import {getDoc, doc, getFirestore, getDocs, orderBy, limit, query, collection} from 'firebase/firestore';
 import QuestionResponse from './questionResponse.jsx';
+import {today} from '../../../index.js';
 import './homeStyles.scss';
 
 class Home extends Component {
@@ -17,25 +18,17 @@ class Home extends Component {
 
         //get the question
         const getQuestion = async() => {
-            //get the current date
-            const today = new Date();
-            //month
-            const allMonths = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
-            const month = allMonths[today.getMonth()];
-            //day
-            const day = today.getDate();
-
+            
+            let currentDate = today();
             //get the question from firestore
             let question;
             try {
 
                 const firestore = getFirestore();
-                let docRef = doc(firestore, 'questions', month);
-                question = (await getDoc(docRef)).data()[day];
+                let docRef = doc(firestore, 'questions', currentDate.month);
+                question = (await getDoc(docRef)).data()[currentDate.day];
             }
-            catch {
-                console.log('No question found');
-            };
+            catch {};
 
             //if there was no question provided today
             if (typeof question !== 'string') {
@@ -51,14 +44,38 @@ class Home extends Component {
         getQuestion().then((question) => {
             this.setState({question: question });
         });
+
+        const getTop5Posts = async() => {
+
+            const firestore = getFirestore();
+
+            //get the top 5 posts by reputation from firestore
+            let top5posts = [];
+            const top5PostsQuery = query(collection(firestore, 'questionResponses'), orderBy('votes', 'desc'), limit(5));
+            const querySnap = await getDocs(top5PostsQuery);
+            querySnap.forEach((doc) => {
+                top5posts.push(doc);
+            });
+
+            return top5posts;
+        };
+
+        getTop5Posts().then((posts) => {
+            this.setState({
+                top5Posts: posts,
+            });
+        });
     };
 
     render() {
         return(
             <React.Fragment>
-                <h1 style={{paddingTop: '3vh', paddingBottom: 0, marginTop: 0}}>
+                <h1 style={{paddingTop: '3vh', paddingBottom: 0, marginTop: 0, marginBottom: 0, fontSize: '70px'}}>
                     Verbose
                 </h1>
+                <p style={{padding: 0, margin: 0}}>
+                    Debate and Discussion
+                </p>
 
                 <div className="dividerLine"></div>
 
@@ -87,10 +104,7 @@ class Home extends Component {
                                 <h2>
                                     Top responses:
                                 </h2>
-                                <QuestionResponse/>
-                                <QuestionResponse/>
-                                <QuestionResponse/>
-                                <QuestionResponse/>
+                                {this.getTop5PostsComponents()}
                             </td>
                         </tr>
                     </thead>
@@ -98,6 +112,23 @@ class Home extends Component {
 
             </React.Fragment>
         );
+    };
+
+    getTop5PostsComponents() {
+
+        //only run if the posts have been fetched
+        if (!this.state.top5Posts) {
+            return <></>
+        }
+        else {
+            let top5PostsHTML = [];
+    
+            this.state.top5Posts.forEach((post) => {
+                top5PostsHTML.push(<QuestionResponse postData={post.data()} postersUserName={post.id}/>)
+            });
+    
+            return top5PostsHTML;
+        };
     };
 };
 
