@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {getStorage, getDownloadURL, ref} from 'firebase/storage';
 
-function SmartImage({imageClasses, imageStyles, imageURL, imagePath}) {
+function SmartImage({imageClasses, imageStyles, imageURL, imagePath, imageId}) {
 
     const [fetchedImageURL, setFetchedImageURL] = useState(null);
 
@@ -30,7 +30,7 @@ function SmartImage({imageClasses, imageStyles, imageURL, imagePath}) {
     else {
         return (
             <React.Fragment>
-                <img className={imageClasses} imageStyles={imageStyles} src={imagePath ? fetchedImageURL : imageURL} />
+                <img className={imageClasses} id={imageId} style={imageStyles} src={imagePath ? fetchedImageURL : imageURL} />
             </React.Fragment>
         );
     };
