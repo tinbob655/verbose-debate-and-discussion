@@ -154,6 +154,12 @@ class Account extends Component {
                             Log in
                         </h2>
 
+                        <div className="hiddenErrorWrapper" id="loginHiddenErrorWrapper">
+                            <p style={{color: 'red'}}>
+                                {this.state.errorMessage}
+                            </p>
+                        </div>
+
                         {/*log in form*/}
                         <form id="logInForm" onSubmit={(event) => {this.logInFormCompleted(event)}}>
 
@@ -176,6 +182,12 @@ class Account extends Component {
                         <h2>
                             Sign up
                         </h2>
+
+                        <div className="hiddenErrorWrapper" id="signUpHiddenErrorWrapper">
+                            <p style={{color: 'red'}}>
+                                {this.state.errorMessage}
+                            </p>
+                        </div>
 
                         {/*sign up form*/}
                         <form id="signUpForm" onSubmit={(event) => {this.signUpFormCompleted(event)}}>
@@ -217,7 +229,9 @@ class Account extends Component {
 
         //make sure an email and a password were provided
         if (!event.currentTarget.email.value || !event.currentTarget.password.value) {
-            throw('Either an email or a password was not provided');
+            this.state.errorMessage = 'Missing either an email or a password';
+            document.getElementById('loginHiddenErrorWrapper').classList.add('shown');
+            return;
         }
 
         //log in the user
@@ -227,7 +241,14 @@ class Account extends Component {
             window.location.reload();
         })
         .catch((error) => {
-            throw(error)
+            if (error.code === 'auth/too-many-requests') {
+                this.setState({errorMessage: 'Too many login attempts, please try again later'})
+            }
+            else {
+                this.setState({errorMessage: 'Incorrect email or password'})
+            };
+            document.getElementById('loginHiddenErrorWrapper').classList.add('shown');
+            console.error(error);
         });
     };
 
@@ -236,15 +257,22 @@ class Account extends Component {
 
         //make sure an email and a password were provided
         if (!event.currentTarget.email.value || !event.currentTarget.password.value) {
-            throw ('Either an email or a password was not provided');
+            this.setState({errorMessage: 'Missing either an email or a password'});
+            document.getElementById('signUpHiddenErrorWrapper').classList.add('shown');
+            return;
+
         }
         //make sure a username was entered
         else if (!event.currentTarget.username.value) {
-            throw ('No username was provided');
+            this.setState({errorMessage: 'No username was provided'});
+            document.getElementById('signUpHiddenErrorWrapper').classList.add('shown');
+            return;
         }
         //make sure the two passwords match
         else if (event.currentTarget.password.value !== event.currentTarget.confirmPassword.value) {
-            throw ('Passwords do not match');
+            this.setState({errorMessage: 'Passwords do not match'});
+            document.getElementById('signUpHiddenErrorWrapper').classList.add('shown');
+            return;
         };
 
         //sign up with the user's credentials
@@ -264,7 +292,17 @@ class Account extends Component {
             window.location.reload();
         })
         .catch((error) => {
-            throw(error);
+            if (error.code === 'auth/email-already-exists') {
+                this.setState({errorMessage: 'There is already an account with the email address'});
+            }
+            else if (error.code === 'auth/invalid-password') {
+                this.setState({errorMessage: 'Your password must have at least six characters'});
+            }
+            else {
+                this.setState({errorMessage: 'We encountered an internal server error, please try again'})
+            }
+            document.getElementById('signUpHiddenErrorWrapper').classList.add('shown');
+            console.error(error);
         });
     };
 

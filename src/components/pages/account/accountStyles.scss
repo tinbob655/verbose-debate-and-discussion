@@ -30,3 +30,13 @@ div#logInContentWrapper, div#signUpContentWrapper {
     position: absolute;
     width: 50%;
 }
+
+div.hiddenErrorWrapper {
+    max-height: 0;
+    visibility: hidden;
+
+    &.shown {
+        max-height: unset;
+        visibility: visible;
+    }
+}
