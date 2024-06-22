@@ -34,7 +34,7 @@ onAuthStateChanged(auth, (user) => {
   if (user) {
 
     //user is logged in
-    sessionStorage.setItem('user', user);
+    sessionStorage.setItem('user', JSON.stringify(user));
   }
   else {
 
