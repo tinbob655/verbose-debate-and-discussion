@@ -6,9 +6,6 @@ import { BrowserRouter } from 'react-router-dom';
 import { firebaseSetup } from './firebase.js';
 import AllRoutes from './routes.jsx';
 
-
-//import header and footer
-import Header from './components/multi-page/header.jsx';
 import Footer from './components/multi-page/footer.jsx';
 
 export function today() {
@@ -36,6 +33,7 @@ root.render(
     <React.StrictMode>
       <AllRoutes/>
       <Analytics/>
+      <Footer/>
     </React.StrictMode>
   </BrowserRouter>
 );
