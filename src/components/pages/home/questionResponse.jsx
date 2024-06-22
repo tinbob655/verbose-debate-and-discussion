@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {getFirestore, query, where, collection, getDocs, documentId} from 'firebase/firestore';
+import {getFirestore, query, where, collection, getDocs} from 'firebase/firestore';
 
 export default function QuestionRespnse({postData, postersUserName}) {
     
@@ -12,7 +12,7 @@ export default function QuestionRespnse({postData, postersUserName}) {
     
     useEffect(() => {
 
-        setUsername(postersUserName);
+        setUsername(postersUserName)
         setVotes(postData.votes);
         setUserPost(postData.post);
         
@@ -22,7 +22,7 @@ export default function QuestionRespnse({postData, postersUserName}) {
             //to prevent data does not exist errors
             try {
                 const firestore = getFirestore();
-                const userData = query(collection(firestore, 'users'), where(documentId(), '==', username));
+                const userData = query(collection(firestore, 'users'), where('username', '==', username));
                 const userDataSnap = await getDocs(userData);
 
                 //save the user data to a map and then return it
@@ -45,9 +45,6 @@ export default function QuestionRespnse({postData, postersUserName}) {
             setProfilePictureURL(userData.profilePictureURL);
         });
     }, []);
-    
-    //reusable style
-    const noVerticalPaddingOrMargin = {marginTop: 0, paddingTop: 0, marginBottom: 0, paddingBottom: 0};
 
     return (
         <div className="questionResponseWrapper">
@@ -57,23 +54,23 @@ export default function QuestionRespnse({postData, postersUserName}) {
                         <td style={{width: '30%'}}>
 
                             {/*PROFILE PICTURE*/}
-                            <div id="profilePictureWrapper" style={noVerticalPaddingOrMargin}>
+                            <div id="profilePictureWrapper" className="noVerticalSpacing">
                                 <img src={profilePictureURL} alt={`${username}'s profile picture`} className="profilePicture" />
                             </div>
                         </td>
                         <td>
                             <button onClick={() => {
                                 //take current post viewer to the post maker's page
-                            }} style={noVerticalPaddingOrMargin}>
+                            }} className="noVerticalSpacing">
 
                                 {/*POST MAKER'S NAME*/}
-                                <h3 style={noVerticalPaddingOrMargin} className="alignLeft">
+                                <h3 className="noVerticalSpacing alignLeft">
                                     {username}
                                 </h3>
                             </button>
                         </td>
                         <td>
-                            <p className="alignRight" style={noVerticalPaddingOrMargin}>
+                            <p className="noVerticalSpacing alignRight">
                                 Reputation: {userReputation}
                             </p>
                         </td>
@@ -82,7 +79,7 @@ export default function QuestionRespnse({postData, postersUserName}) {
             </table>
 
             {/*ACTUAL POST*/}
-            <table style={noVerticalPaddingOrMargin}>
+            <table className="noVerticalSpacing">
                 <thead>
                     <tr>
                         <td style={{width: '80%'}}>
@@ -91,27 +88,39 @@ export default function QuestionRespnse({postData, postersUserName}) {
                             </h2>
                         </td>
                         <td>
-                            <button type="button" style={noVerticalPaddingOrMargin} onClick={() => {
-                                //upvote post
-                            }}>
-                                <h3 style={noVerticalPaddingOrMargin}>
-                                    /\
-                                </h3>
-                            </button>
-                        </td>
-                        <td>
-                            <p style={noVerticalPaddingOrMargin}>
-                                {votes}
-                            </p>
-                        </td>
-                        <td>
-                            <button type="button" style={noVerticalPaddingOrMargin} onClick={() => {
-                                //downvote post
-                            }}>
-                                <h3 style={noVerticalPaddingOrMargin}>
-                                    \/
-                                </h3>
-                            </button>
+
+                            {/*UPVOTE DOWNVOTE SECTION*/}
+                            <table style={{paddingRight: '10px'}}>
+                                <thead>
+                                    <tr>
+                                        <td>
+                                            <button type="button" className="noVerticalSpacing" style={{width: '50%', padding: 0}} onClick={() => {
+                                                //upvote post
+                                            }}>
+                                                <h3 className="noVerticalSpacing">
+                                                    /\
+                                                </h3>
+                                            </button>
+                                        </td>
+
+                                        <td>
+                                            <p className="noVerticalSpacing" style={{width: '50%'}}>
+                                                {votes}
+                                            </p>
+                                        </td>
+
+                                        <td>
+                                            <button type="button" className="noVerticalSpacing" style={{width: '50%', padding: 0}} onClick={() => {
+                                                //downvote post
+                                            }}>
+                                                <h3 className="noVerticalSpacing">
+                                                    \/
+                                                </h3>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </thead>
+                            </table>
                         </td>
                     </tr>
                 </thead>
