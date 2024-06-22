@@ -3,6 +3,7 @@ import {Route, Routes} from 'react-router-dom';
 
 //import all pages
 import Home from './components/pages/home/home.jsx';
+import Account from './components/pages/account/account.jsx';
 
 class AllRoutes extends Component {
 
@@ -17,6 +18,7 @@ class AllRoutes extends Component {
     getRoutes() {
         const pages = {
             home: <Home/>,
+            account: <Account/>,
         };
         let routeHTML = [];
 

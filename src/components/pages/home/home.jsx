@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {getDoc, doc, getFirestore, getDocs, orderBy, limit, query, collection} from 'firebase/firestore';
 import QuestionResponse from './questionResponse.jsx';
+import SmartImage from '../../multi-page/smartImage.jsx';
+import { Link } from 'react-router-dom';
 import {today} from '../../../index.js';
 import './homeStyles.scss';
 
@@ -70,9 +72,20 @@ class Home extends Component {
     render() {
         return(
             <React.Fragment>
+
                 <h1 style={{paddingTop: '3vh', paddingBottom: 0, marginTop: 0, marginBottom: 0, fontSize: '70px'}}>
                     Verbose
                 </h1>
+
+                {/*account button*/}
+                <div style={{position: 'absolute', top: 0, right: '5px'}}>
+                    <Link to='/account'>
+                    <button type="button">
+                        <SmartImage imagePath='interactiveElements/accountIcon.png' imageStyles={{height: '150px', width: 'auto'}} />
+                    </button>
+                    </Link>
+                </div>
+
                 <p style={{padding: 0, margin: 0}}>
                     Debate and Discussion
                 </p>
@@ -109,7 +122,6 @@ class Home extends Component {
                         </tr>
                     </thead>
                 </table>
-
             </React.Fragment>
         );
     };
