@@ -1,0 +1,32 @@
+div#logInButtonWrapper {
+    border-right: 5px solid #05edf5;
+}
+
+div #logInButtonWrapper, div#signUpButtonWrapper {
+    height: 100%;
+}
+
+div#logInContentWrapper {
+    transform: translate(-50vw, 0);
+
+    &.selected {
+        transform: translate(25vw, 0);
+    }
+}
+
+div#signUpContentWrapper {
+    transform: translate(100vw, 0);
+
+    &.selected {
+        transform: translate(25vw, 0);
+    }
+}
+
+div#logInContentWrapper, div#signUpContentWrapper {
+    transition-property: transform;
+    transition-duration: 1s;
+    transition-timing-function: ease;
+
+    position: absolute;
+    width: 50%;
+}
