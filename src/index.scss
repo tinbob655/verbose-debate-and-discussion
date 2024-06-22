@@ -174,3 +174,12 @@ input {
     padding-top: 0;
     padding-bottom: 0;
 }
+
+.growOnHover {
+    transition-property: transform;
+    transition-duration: 0.75s;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+}
