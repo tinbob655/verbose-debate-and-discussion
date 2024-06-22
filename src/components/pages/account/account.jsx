@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import './accountStyles.scss';
 import {doc, setDoc, getFirestore, query, where, collection, documentId, getDocs} from 'firebase/firestore';
+import { Link } from 'react-router-dom';
 
 //auth modules
 import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut} from 'firebase/auth';
@@ -63,6 +64,14 @@ class Account extends Component {
                 <p style={{padding: 0, margin: 0}}>
                     Be part of the party
                 </p>
+
+                <div id="backArrowWrapper">
+                    <Link to='/'>
+                        <h1>
+                            ⬅
+                        </h1>
+                    </Link>
+                </div>
 
                 <div className="dividerLine"></div>
 
