@@ -4,6 +4,7 @@ import {Route, Routes} from 'react-router-dom';
 //import all pages
 import Home from './components/pages/home/home.jsx';
 import Account from './components/pages/account/account.jsx';
+import UserProfile from './components/pages/userProfile/userProfile.jsx';
 
 class AllRoutes extends Component {
 
@@ -19,6 +20,7 @@ class AllRoutes extends Component {
         const pages = {
             home: <Home/>,
             account: <Account/>,
+            userProfile: <UserProfile/>,
         };
         let routeHTML = [];
 

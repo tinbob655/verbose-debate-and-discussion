@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {getFirestore, query, where, collection, getDocs} from 'firebase/firestore';
+import { Link } from 'react-router-dom';
 
 export default function QuestionRespnse({postData, postersUserName}) {
     
@@ -54,20 +55,23 @@ export default function QuestionRespnse({postData, postersUserName}) {
                         <td style={{width: '30%'}}>
 
                             {/*PROFILE PICTURE*/}
-                            <div id="profilePictureWrapper" className="noVerticalSpacing">
-                                <img src={profilePictureURL} alt={`${username}'s profile picture`} className="profilePicture" />
-                            </div>
+                            <Link to={{
+                                pathname: '/userProfile',
+                                state: null //uid goes here
+                            }} >
+                                <img src={profilePictureURL} alt={`${username}'s profile picture`} className="profilePicture growOnHover" />
+                            </Link>
                         </td>
                         <td>
-                            <button onClick={() => {
-                                //take current post viewer to the post maker's page
-                            }} className="noVerticalSpacing">
-
+                            <Link to={{
+                                pathname: '/userProfile',
+                                state: null //uid goes here
+                            }}>
                                 {/*POST MAKER'S NAME*/}
                                 <h3 className="noVerticalSpacing alignLeft">
                                     {username}
                                 </h3>
-                            </button>
+                            </Link>
                         </td>
                         <td>
                             <p className="noVerticalSpacing alignRight">
