@@ -40,16 +40,3 @@ div.hiddenErrorWrapper {
         visibility: visible;
     }
 }
-
-div#backArrowWrapper {
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    transition-property: transform;
-    transition-duration: 0.75s;
-
-    &:hover {
-        transform: scale(1.1);
-    }
-}
