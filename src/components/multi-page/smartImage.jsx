@@ -17,12 +17,8 @@ function SmartImage({imageClasses, imageStyles, imageURL, imagePath, imageId}) {
     });
 
     //validation
-    //either imageURL or imagePath is required
-    if (!imageURL && !imagePath) {
-        throw('No source file specified for smart image');
-    }
     //both an image path and an imageURL are not allowed at the same time
-    else if (imageURL && imagePath) {
+    if (imageURL && imagePath) {
         throw('Cannot render a smart image when provided with both an imageURL and an imagePath');
     }
 
