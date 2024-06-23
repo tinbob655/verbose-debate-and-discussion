@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {getDoc, doc, getFirestore, getDocs, orderBy, limit, query, collection} from 'firebase/firestore';
+import {getDoc, doc, getFirestore, getDocs, orderBy, where, limit, query, collection, documentId} from 'firebase/firestore';
 import QuestionResponse from './questionResponse.jsx';
 import SmartImage from '../../multi-page/smartImage.jsx';
 import { Link } from 'react-router-dom';
@@ -17,6 +17,11 @@ class Home extends Component {
     };
 
     componentDidMount() {
+
+        //if the user is logged in, fetch their profile picture
+        if (sessionStorage.getItem('user')) {
+            this.getUserProfilePicture();
+        };
 
         //get the question
         const getQuestion = async() => {
@@ -81,7 +86,7 @@ class Home extends Component {
                 <div style={{position: 'absolute', top: 0, right: '5px'}}>
                     <Link to='/account'>
                     <button type="button">
-                        <SmartImage imagePath='interactiveElements/accountIcon.png' imageStyles={{height: '150px', width: 'auto'}} imageClasses="growOnHover" />
+                        <SmartImage imagePath={!sessionStorage.getItem('user') ? 'interactiveElements/accountIcon.png' : null} imageURL={sessionStorage.getItem('user') ? this.state.userProfilePicture : null} imageStyles={sessionStorage.getItem('user') ? {height: '7vw', width: '7vw', border: '5px solid #353535', marginRight: '1vw'} : {height: '150px', width: 'auto'}} imageClasses={sessionStorage.getItem('user') ? 'growOnHover profilePicture' : 'growOnHover'} />
                     </button>
                     </Link>
                 </div>
@@ -141,6 +146,28 @@ class Home extends Component {
     
             return top5PostsHTML;
         };
+    };
+
+    getUserProfilePicture() {
+
+        const getUserFile = async() => {
+            const firestore = getFirestore();
+            const uid = JSON.parse(sessionStorage.getItem('user')).uid;
+            const userFileQuery = query(collection(firestore, 'users'), where(documentId(), '==', uid));
+            const userFileSnap = await getDocs(userFileQuery);
+
+            let res = {};
+            userFileSnap.forEach((user) => {
+                res = user.data();
+            });
+
+            return res;
+        }
+
+        getUserFile()
+        .then((res) => {
+            this.setState({userProfilePicture: res.profilePictureURL});
+        });
     };
 };
 
