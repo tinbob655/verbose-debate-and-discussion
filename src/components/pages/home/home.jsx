@@ -81,7 +81,7 @@ class Home extends Component {
                 <div style={{position: 'absolute', top: 0, right: '5px'}}>
                     <Link to='/account'>
                     <button type="button">
-                        <SmartImage imagePath='interactiveElements/accountIcon.png' imageStyles={{height: '150px', width: 'auto'}} />
+                        <SmartImage imagePath='interactiveElements/accountIcon.png' imageStyles={{height: '150px', width: 'auto'}} imageClasses="growOnHover" />
                     </button>
                     </Link>
                 </div>
