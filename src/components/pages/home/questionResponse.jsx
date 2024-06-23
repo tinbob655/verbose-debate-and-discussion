@@ -55,18 +55,12 @@ export default function QuestionRespnse({postData, postersUserName}) {
                         <td style={{width: '30%'}}>
 
                             {/*PROFILE PICTURE*/}
-                            <Link to={{
-                                pathname: '/userProfile',
-                                state: null //uid goes here
-                            }} >
-                                <img src={profilePictureURL} alt={`${username}'s profile picture`} className="profilePicture growOnHover" />
+                            <Link to={'/userProfile'} state={{username: postersUserName /*username goes here*/}} >
+                                <img src={profilePictureURL} alt={`${username}'s profile`} className="profilePicture growOnHover" />
                             </Link>
                         </td>
                         <td>
-                            <Link to={{
-                                pathname: '/userProfile',
-                                state: null //uid goes here
-                            }}>
+                            <Link to={'/userProfile'} state={{username: postersUserName /*uid goes here*/}} >
                                 {/*POST MAKER'S NAME*/}
                                 <h3 className="noVerticalSpacing alignLeft">
                                     {username}
