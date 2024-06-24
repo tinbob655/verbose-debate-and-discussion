@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import './accountStyles.scss';
 import SmartImage from '../../multi-page/smartImage.jsx';
-import {doc, setDoc, getFirestore, query, where, collection, documentId, getDocs} from 'firebase/firestore';
+import {doc, setDoc, getFirestore, query, where, collection, documentId, getDocs, updateDoc} from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/authContext.jsx';
-import {getStorage, getDownloadURL, ref} from 'firebase/storage';
+import {getStorage, getDownloadURL, ref, uploadBytes} from 'firebase/storage';
 
 //auth modules
 import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut} from 'firebase/auth';
@@ -22,7 +22,6 @@ export default function Account() {
 
     //listener for auth changes
     getAuth().onAuthStateChanged((user) => {
-        console.log(user)
         updateAuth(user);
     });
 
@@ -95,12 +94,14 @@ export default function Account() {
                         <tr>
                             <td>
                                 <img src={userProfilePictureURL} className="profilePicture" style={{width: '20vw', height: '20vw', marginLeft: '1vw', border: '5px solid #353535'}} />
-                                <button type="button" onClick={() => {
 
-                                    //edit user's profile
-                                }}>
-                                    <SmartImage imagePath="interactiveElements/pencil.jpg" imageStyles={{height: 'auto', width: '25%'}} imageClasses="centered growOnHover" />
-                                </button>
+                                {/*upload profile picture form*/}
+                                <label htmlFor="imageUpload">
+                                    <SmartImage imagePath="interactiveElements/pencil.jpg" imageStyles={{height: 'auto', width: '25%', marginTop: '15px'}} imageClasses="centered growOnHover" />
+                                </label>
+                                <input type="file" id="imageUpload" accept="image/*" style={{display: 'none'}} onChange={(event) => {
+                                    profilePictureFormSubmitted(event.target.files[0]);
+                                }} />
                             </td>
                             <td style={{width: '75%', paddingRight: '2vw'}}>
                                 <h1>
@@ -380,7 +381,7 @@ export default function Account() {
                     reputation: 0,
                     profilePictureURL: url,
                 });
-                
+
                 setLoggedIn(true);
             });
 
@@ -409,6 +410,37 @@ export default function Account() {
         })
         .catch((error) => {
             throw(error);
+        });
+    };
+
+    function profilePictureFormSubmitted(uploadedImage) {
+
+        console.log(uploadedImage)
+        //only run if a file was uploaded and auth exists
+        if (!uploadedImage || !auth) return;
+
+        console.log('firing')
+
+        //work out the file extension of the image uploaded
+        const filename = uploadedImage.name;
+        const fileExtension = filename.split('.')[1];
+
+        const storage = getStorage();
+        const imageRef = ref(storage, `uploadedProfilePictures/${username}.${fileExtension}`);
+        uploadBytes(imageRef, uploadedImage)
+        .then(() => {
+
+            //get the url of the uploaded image and set it as the profile picture url of the user in firestore
+            getDownloadURL(ref(storage, `uploadedProfilePictures/${username}.${fileExtension}`))
+            .then( async(url) => {
+                
+                const firestore = getFirestore();
+                await updateDoc(doc(firestore, 'users', auth.uid),  {
+                    profilePictureURL: url,
+                });
+
+                setUserProfilePictureURL(url);
+            });
         });
     };
 };
