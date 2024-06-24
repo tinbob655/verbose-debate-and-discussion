@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import './accountStyles.scss';
+import SmartImage from '../../multi-page/smartImage.jsx';
 import {doc, setDoc, getFirestore, query, where, collection, documentId, getDocs} from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/authContext.jsx';
+import {getStorage, getDownloadURL, ref} from 'firebase/storage';
 
 //auth modules
 import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut} from 'firebase/auth';
@@ -18,15 +20,14 @@ export default function Account() {
     const [errorMessage, setErrorMessage] = useState('');
     const [recentActivity, setRecentActivity] = useState('');
 
-    
-    
+    //listener for auth changes
+    getAuth().onAuthStateChanged((user) => {
+        console.log(user)
+        updateAuth(user);
+    });
+
     useEffect(() => {
         
-        //listener for auth changes
-        getAuth().onAuthStateChanged((user) => {
-            updateAuth(user);
-        });
-
         //if the user is logged in, get their profile picture url and save it to state
         if (loggedIn) {
 
@@ -63,6 +64,7 @@ export default function Account() {
                 setReputation(userData.reputation);
             });
         };
+
     }, [loggedIn]);
 
     return(
@@ -93,6 +95,12 @@ export default function Account() {
                         <tr>
                             <td>
                                 <img src={userProfilePictureURL} className="profilePicture" style={{width: '20vw', height: '20vw', marginLeft: '1vw', border: '5px solid #353535'}} />
+                                <button type="button" onClick={() => {
+
+                                    //edit user's profile
+                                }}>
+                                    <SmartImage imagePath="interactiveElements/pencil.jpg" imageStyles={{height: 'auto', width: '25%'}} imageClasses="centered growOnHover" />
+                                </button>
                             </td>
                             <td style={{width: '75%', paddingRight: '2vw'}}>
                                 <h1>
@@ -233,13 +241,74 @@ export default function Account() {
                         </p>
                         <input type="password" name="confirmPassword" placeholder="Confirm your password..." required></input>
 
-                        <input type="submit" name="submit" className="submit"></input>
+                        <p className="noVerticalSpacing">
+                            Political allegiance
+                        </p>
+                        <p className="noVerticalSpacing" style={{fontSize: '15px', color: 'white'}}>
+                            We will not store your political allegiance. It is used only to decide your default profile picture
+                        </p>
+                        {getPartyOptions()}
+
+                        <input type="submit" name="submit" style={{paddingTop: '7px', borderTop: '3px solid white', borderRadius: 'unset'}} className="submit"></input>
                     </form>
                 </div>
             </React.Fragment>
             }
         </React.Fragment>
     );
+
+    function getPartyOptions() {
+        let partyOptionsHTML = [];
+        partyOptionsHTML.push(
+            <React.Fragment>
+                <table style={{width: '40%'}} className="centered">
+                    <thead>
+                        {getInnerPartyOptions()}
+                    </thead>
+                </table>
+            </React.Fragment>
+        );
+
+        function getInnerPartyOptions() {
+            let innerPartyOptionsHTML = [];
+            const partyOptions = [
+                {backendName: 'labour', frontendName: 'Labour Party'},
+                {backendName: 'conservative', frontendName: 'Conservative Party'},
+                {backendName: 'liberalDemocrats', frontendName: 'Liberal Democrats'},
+                {backendName: 'reformUK', frontendName: 'Reform UK'},
+                {backendName: 'green', frontendName: 'Green Party'},
+                {backendName: 'workersParty', frontendName: "Worker's Party"},
+                {backendName: 'scottishNationalParty', frontendName: 'Scottish National Party'},
+                {backendName: 'alba', frontendName: 'Alba Party'},
+                {backendName: 'sinnFein', frontendName: 'Sinn Féin'},
+                {backendName: 'plaidCymru', frontendName: 'Plaid Cymru'},
+                {backendName: 'alliancePartyOfNorthernIreland', frontendName: 'Alliance Party of Northern Ireland'},
+                {backendName: 'socialDemocraticAndLabourParty', frontendName: 'Social, Democratic and Labour Party'},
+                {backendName: 'democraticUnionistParty', frontendName: 'Democratic Unionist Party'},
+            ];
+
+            partyOptions.forEach((party) => {
+                innerPartyOptionsHTML.push(
+                    <React.Fragment>
+                        <tr>
+                            <td style={{width: '25%'}}>
+                                <input type="radio" id={party.backendName} className="radio growOnHover centered" name="politicalAllegiance" value={party.backendName} required></input>
+                            </td>
+                            <td>
+                                <label htmlFor={party.backendName} className="nextToRadio">
+                                    {party.frontendName}
+                                </label>
+                            </td>
+                        </tr>
+                    </React.Fragment>
+                );
+            });
+
+            return innerPartyOptionsHTML;
+        };
+
+        return partyOptionsHTML;
+    };
 
     function logInFormCompleted(event) {
         event.preventDefault();
@@ -295,20 +364,27 @@ export default function Account() {
         //sign up with the user's credentials
         const auth = getAuth();
         const username = event.currentTarget.username.value;
+        const politicalAllegiance = event.currentTarget.politicalAllegiance.value;
         createUserWithEmailAndPassword(auth, event.currentTarget.email.value, event.currentTarget.password.value)
         .then( async(userCred) => {
 
-            //create an entry to the user section of firestore for this user
-            const firestore = getFirestore();
-            await setDoc(doc(firestore, 'users', userCred.user.uid), {
-                username: username,
-                reputation: 0,
-                profilePicture: null,
+            //get the user's default profile picture using their political allegiance
+            const storage = getStorage();
+            getDownloadURL(ref(storage, 'defaultProfilePictures/'+politicalAllegiance+'.jpg'))
+            .then( async(url) => {
+
+                //create an entry to the user section of firestore for this user
+                const firestore = getFirestore();
+                await setDoc(doc(firestore, 'users', userCred.user.uid), {
+                    username: username,
+                    reputation: 0,
+                    profilePictureURL: url,
+                });
             });
 
             setLoggedIn(true);
-
         })
+
         .catch((error) => {
             if (error.code === 'auth/email-already-exists') {
                 setErrorMessage('There is already an account with the email address')
