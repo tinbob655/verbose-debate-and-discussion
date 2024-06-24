@@ -380,9 +380,10 @@ export default function Account() {
                     reputation: 0,
                     profilePictureURL: url,
                 });
+                
+                setLoggedIn(true);
             });
 
-            setLoggedIn(true);
         })
 
         .catch((error) => {
