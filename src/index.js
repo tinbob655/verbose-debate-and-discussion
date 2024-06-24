@@ -5,7 +5,7 @@ import './index.scss';
 import { BrowserRouter } from 'react-router-dom';
 import { firebaseSetup } from './firebase.js';
 import AllRoutes from './routes.jsx';
-import {getAuth, onAuthStateChanged} from 'firebase/auth';
+import { AuthContextProvider } from './context/authContext.jsx';
 
 import Footer from './components/multi-page/footer.jsx';
 
@@ -28,28 +28,18 @@ export function today() {
 //firebase init
 firebaseSetup();
 
-const auth = getAuth();
-onAuthStateChanged(auth, (user) => {
-
-  if (user) {
-
-    //user is logged in
-    sessionStorage.setItem('user', JSON.stringify(user));
-  }
-  else {
-
-    //user is not logged in
-    sessionStorage.removeItem('user');
-  }
-});
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <React.StrictMode>
-      <AllRoutes/>
+
+      <AuthContextProvider>
+        <AllRoutes/>
+        <Footer/>
+      </AuthContextProvider>
+
       <Analytics/>
-      <Footer/>
+
     </React.StrictMode>
   </BrowserRouter>
 );

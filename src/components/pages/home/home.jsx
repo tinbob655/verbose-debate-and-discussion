@@ -3,10 +3,13 @@ import {getDoc, doc, getFirestore, getDocs, orderBy, where, limit, query, collec
 import QuestionResponse from './questionResponse.jsx';
 import SmartImage from '../../multi-page/smartImage.jsx';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../../context/authContext.jsx';
 import {today} from '../../../index.js';
 import './homeStyles.scss';
 
 export default function Home() {
+
+    const {auth} = useAuth();
 
     const [question, setQuestion] = useState('');
     const [top5Posts, setTop5Posts] = useState(null);
@@ -15,7 +18,7 @@ export default function Home() {
     useEffect(() => {
 
         //if the user is logged in, fetch their profile picture
-        if (sessionStorage.getItem('user')) {
+        if (auth) {
             getUserProfilePicture();
         };
 
@@ -79,7 +82,7 @@ export default function Home() {
             <div style={{position: 'absolute', top: 0, right: '5px'}}>
                 <Link to='/account'>
                 <button type="button">
-                    <SmartImage imagePath={!sessionStorage.getItem('user') ? 'interactiveElements/accountIcon.png' : null} imageURL={sessionStorage.getItem('user') ? userProfilePicture : null} imageStyles={sessionStorage.getItem('user') ? {height: '7vw', width: '7vw', border: '5px solid #353535', marginRight: '1vw'} : {height: '150px', width: 'auto'}} imageClasses={sessionStorage.getItem('user') ? 'growOnHover profilePicture' : 'growOnHover'} />
+                    <SmartImage imagePath={!auth ? 'interactiveElements/accountIcon.png' : null} imageURL={auth ? userProfilePicture : null} imageStyles={auth ? {height: '7vw', width: '7vw', border: '5px solid #353535', marginRight: '1vw'} : {height: '150px', width: 'auto'}} imageClasses={auth ? 'growOnHover profilePicture' : 'growOnHover'} />
                 </button>
                 </Link>
             </div>
@@ -144,7 +147,7 @@ export default function Home() {
     
         const getUserFile = async() => {
             const firestore = getFirestore();
-            const uid = JSON.parse(sessionStorage.getItem('user')).uid;
+            const uid = auth.uid;
             const userFileQuery = query(collection(firestore, 'users'), where(documentId(), '==', uid));
             const userFileSnap = await getDocs(userFileQuery);
     

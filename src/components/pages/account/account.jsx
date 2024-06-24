@@ -2,36 +2,46 @@ import React, {useEffect, useState} from 'react';
 import './accountStyles.scss';
 import {doc, setDoc, getFirestore, query, where, collection, documentId, getDocs} from 'firebase/firestore';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../../context/authContext.jsx';
 
 //auth modules
 import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut} from 'firebase/auth';
 
 export default function Account() {
 
-    const [loggedIn, setLoggedIn] = useState(sessionStorage.getItem('user') ? true : false);
+    const {auth, updateAuth} = useAuth();
+
+    const [loggedIn, setLoggedIn] = useState(auth ? true : false);
     const [userProfilePictureURL, setUserProfilePictureURL] = useState(undefined);
     const [username, setUsername] = useState('');
     const [reputation, setReputation] = useState(0);
     const [errorMessage, setErrorMessage] = useState('');
     const [recentActivity, setRecentActivity] = useState('');
 
+    
+    
     useEffect(() => {
+        
+        //listener for auth changes
+        getAuth().onAuthStateChanged((user) => {
+            updateAuth(user);
+        });
 
         //if the user is logged in, get their profile picture url and save it to state
         if (loggedIn) {
 
             //get the user's user id
-            const user = JSON.parse(sessionStorage.getItem('user'));
+            const user = auth.uid;
     
             //if there is no user, then do not proceed
             if (!user) {
-                throw('auth.currentUser was null')
+                throw('auth.uid was null')
             };
     
             //get the user's data from firestore
             const getUserData = async() => {
                 const firestore = getFirestore();
-                const userFile = query(collection(firestore, 'users'), where(documentId(), '==', user.uid));
+                const userFile = query(collection(firestore, 'users'), where(documentId(), '==', user));
                 const userPfp = await getDocs(userFile);
         
                 let userData = {};
@@ -53,7 +63,7 @@ export default function Account() {
                 setReputation(userData.reputation);
             });
         };
-    }, []);
+    }, [loggedIn]);
 
     return(
         <React.Fragment>
@@ -297,6 +307,7 @@ export default function Account() {
             });
 
             setLoggedIn(true);
+
         })
         .catch((error) => {
             if (error.code === 'auth/email-already-exists') {
