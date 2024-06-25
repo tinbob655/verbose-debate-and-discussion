@@ -6,7 +6,6 @@ import { Link, Navigate } from 'react-router-dom';
 export default function QuestionRespnse({postData, postersUserName}) {
 
     const {auth, updateAuth} = useAuth();
-    console.log(auth)
 
     const [greyedOut, setGreyedOut] = useState(false);
     const [autoNav, setAutoNav] = useState(<></>);
