@@ -226,6 +226,9 @@ export default function Home() {
                     post: post,
                     voters: [],
                     votes: 0,
+                })
+                .then(() => {
+                    window.location.reload();
                 });
             });
         });
