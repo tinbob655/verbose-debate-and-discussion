@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {getDoc, doc, getFirestore, getDocs, orderBy, where, limit, query, collection, documentId} from 'firebase/firestore';
+import {getDoc, doc, getFirestore, getDocs, orderBy, where, limit, query, collection, documentId, setDoc} from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 import QuestionResponse from './questionResponse.jsx';
 import SmartImage from '../../multi-page/smartImage.jsx';
 import { Link } from 'react-router-dom';
@@ -9,18 +10,26 @@ import './homeStyles.scss';
 
 export default function Home() {
 
+    const navigate = useNavigate();
+
     const {auth} = useAuth();
 
     const [question, setQuestion] = useState('');
     const [top5Posts, setTop5Posts] = useState(null);
     const [userProfilePicture, setUserProfilePicture] = useState('');
+    const [respondButtonStyle, setRespondButtonStyle] = useState(null);
 
     useEffect(() => {
 
         //if the user is logged in, fetch their profile picture
         if (auth) {
             getUserProfilePicture();
-        };
+        }
+        else {
+
+            //if the user is not logged in then grey out the respond button
+            setRespondButtonStyle({color: 'grey'});
+        }
 
         //get the question
         const getQuestion = async() => {
@@ -105,12 +114,41 @@ export default function Home() {
                                 </h2>
 
                                 <button type="button" onClick={() => {
-                                    //answer question button
+                                    if (!auth) {
+
+                                        //if the user was not logged in, take them to the account page
+                                        navigate('/account');
+                                    };
+                                    document.getElementById('yourResponseWrapper').classList.add('shown');
                                 }}>
-                                    <h3>
+                                    <h3 style={respondButtonStyle}>
                                         {question}
                                     </h3>
                                 </button>
+                                <div id="yourResponseWrapper">
+                                    <form id="yourResponseForm" onSubmit={(event) => {
+                                        questionResponseFormSubmitted(event);
+                                    }}>
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <td style={{width: '90%'}}>
+                                                        <p className="noVerticalSpacing" style={{marginBottom: '2vh'}}>
+                                                            Your response:
+                                                        </p>
+                                                        <textarea id="yourResponseText" name="yourResponseText" style={{width: '95%'}} rows="4" required placeholder="Write your response..."></textarea>
+                                                    </td>
+                                                    <td>
+                                                        <label htmlFor="submit">
+                                                            <SmartImage imagePath="interactiveElements/sendIcon.png" imageClasses="growOnHover" />
+                                                        </label>
+                                                        <input type="submit" id="submit" name="submit" value="submit" style={{display: 'none'}}></input>
+                                                    </td>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </form>
+                                </div>
                             </div>
                         </td>
                         <td>
@@ -162,6 +200,34 @@ export default function Home() {
         getUserFile()
         .then((res) => {
             setUserProfilePicture(res.profilePictureURL);
+        });
+    };
+
+    async function questionResponseFormSubmitted(event) {
+        event.preventDefault();
+
+        if (!auth) {
+            throw ('Auth was null');
+        };
+
+        const post = event.currentTarget.yourResponseText.value;
+        const firestore = getFirestore();
+        
+
+        //fetch the username from firestore
+        const usernameQuery = query(collection(firestore, 'users'), where(documentId(), '==', auth.uid));
+        getDocs(usernameQuery)
+        .then((docs) => {
+            docs.forEach((document) => {
+
+                const username = document.data().username;
+
+                setDoc(doc(firestore, 'questionResponses', username), {
+                    post: post,
+                    voters: [],
+                    votes: 0,
+                });
+            });
         });
     };
 };

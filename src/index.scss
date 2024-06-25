@@ -196,6 +196,31 @@ label {
     }
 }
 
+textarea {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 5vh;
+    margin-top: 0;
+    display: block;
+    border-radius: 7px;
+    background-color: #2c2b2b;
+    border: 2px solid #375458;
+    width: 75%;
+    padding: 5px;
+    outline: none !important;
+    color: white;
+    font-family: Nunito;
+
+    transition-property: border transform;
+    transition-duration: 0.75s;
+    transition-timing-function: ease;
+
+    &:focus {
+        border: 2px solid #05edf5;
+        transform: scale(1.05)
+    }
+}
+
 .rounded {
     display: block;
     border-radius: 50%;

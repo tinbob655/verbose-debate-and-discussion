@@ -6,6 +6,7 @@ div#todaysQuestionWrapper {
     padding-left: $horizontalPadding;
     padding-right: $horizontalPadding;
     border: #ffffff solid 4px;
+    overflow-y: hidden;
 }
 
 div.questionResponseWrapper {
@@ -19,6 +20,18 @@ div.questionResponseWrapper {
 
 h3.greyedOut {
     transition-property: color;
-    transition-duration: 0.75s;
+    transition-duration: 0.5s;
     color: grey;
+}
+
+div#yourResponseWrapper {
+    max-height: 0;
+
+    transition-property: max-height;
+    transition-duration: 1s;
+    transition-timing-function: ease;
+
+    &.shown {
+        max-height: 500px;
+    }
 }
