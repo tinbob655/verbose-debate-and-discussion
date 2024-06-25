@@ -415,11 +415,9 @@ export default function Account() {
 
     function profilePictureFormSubmitted(uploadedImage) {
 
-        console.log(uploadedImage)
         //only run if a file was uploaded and auth exists
         if (!uploadedImage || !auth) return;
 
-        console.log('firing')
 
         //work out the file extension of the image uploaded
         const filename = uploadedImage.name;
