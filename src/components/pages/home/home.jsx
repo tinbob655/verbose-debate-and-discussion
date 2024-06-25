@@ -18,6 +18,7 @@ export default function Home() {
     const [top5Posts, setTop5Posts] = useState(null);
     const [userProfilePicture, setUserProfilePicture] = useState('');
     const [respondButtonStyle, setRespondButtonStyle] = useState(null);
+    const [forceReload, setForceReload] = useState(null);
 
     useEffect(() => {
 
@@ -78,7 +79,7 @@ export default function Home() {
         getTop5Posts().then((posts) => {
             setTop5Posts(posts);
         });
-    }, []);
+    }, [forceReload]);
 
     return (
         <React.Fragment>
