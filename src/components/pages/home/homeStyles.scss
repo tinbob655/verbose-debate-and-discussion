@@ -16,3 +16,9 @@ div.questionResponseWrapper {
     border: #d6e4e3 solid 3px;
     margin-bottom: 1vh;
 }
+
+h3.greyedOut {
+    transition-property: color;
+    transition-duration: 0.75s;
+    color: grey;
+}
