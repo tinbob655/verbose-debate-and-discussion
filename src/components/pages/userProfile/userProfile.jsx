@@ -10,6 +10,7 @@ export default function UserProfile() {
 
     const [userProfilePictureURL, setUserProfilePictureURL] = useState('');
     const [userReputation, setUserReputation] = useState(0);
+    const [userBio, setUserbio] = useState(null);
 
     useEffect(() => {
 
@@ -31,6 +32,7 @@ export default function UserProfile() {
         .then((data) => {
             setUserProfilePictureURL(data.profilePictureURL);
             setUserReputation(data.reputation);
+            setUserbio(data.bio)
         });
     }, []);
 
@@ -66,9 +68,9 @@ export default function UserProfile() {
                             <h2 className="alignLeft">
                                 Bio:
                             </h2>
-                            <p className="alignLeft" style={{marginLeft: '5%', maxWidth: '80%'}}>
+                            <p className="alignLeft noVerticalSpacing" style={{marginLeft: '1%', width: '70%'}}>
                                 {/*user bio*/}
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras arcu quam, condimentum nec porttitor in, dignissim nec sapien. Nulla id enim pulvinar justo porttitor auctor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin et faucibus enim, ac venenatis sapien. Nulla commodo magna vitae mi euismod, ut gravida nisi fermentum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer scelerisque nunc ac eros fermentum fringilla. In eu turpis at velit aliquam condimentum. In porttitor ex tristique, scelerisque mi vitae, sagittis neque. Fusce metus dui, pulvinar et lorem ac, malesuada tristique tellus. Pellentesque mollis felis diam, vitae elementum mi rhoncus sit amet. Nunc et orci sed odio pellentesque aliquet eu in magna. Integer consectetur varius nisl et blandit.
+                                {userBio ? userBio : "That user has not yet created a bio!"}
                             </p>
                         </td>
                     </tr>
@@ -80,13 +82,6 @@ export default function UserProfile() {
             </h2>
             <p className="alignRight noVerticalSpacing" style={{marginRight: '10%', fontSize: '50px'}}>
                 {userReputation}
-            </p>
-
-            <h2 className="alignLeft noVerticalSpacing">
-                Recent activity:
-            </h2>
-            <p className="alignLeft noVerticalSpacing" style={{maxWidth: '75%'}}>
-            Aenean lacinia libero arcu, at euismod leo tempus molestie. Fusce suscipit augue ac feugiat ornare. Nullam porttitor ullamcorper orci id elementum. Phasellus congue dictum mauris sed sodales. Morbi bibendum nisl ac nibh tempus convallis. Maecenas tellus libero, lobortis vitae est in, sagittis tempus augue. Integer vel pharetra elit. Quisque varius, tellus et ornare lobortis, ex ipsum ultrices metus, sit amet cursus velit nibh eget tortor. Aliquam vel dolor luctus, lobortis nisl et, ornare metus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nunc ut ex vel ligula ornare vehicula. Quisque vitae facilisis urna, a tempus enim. Etiam posuere, nunc et feugiat laoreet, velit ipsum luctus ex, et porta lacus dui in est.
             </p>
         </React.Fragment>
     )

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import './accountStyles.scss';
 import SmartImage from '../../multi-page/smartImage.jsx';
-import {doc, setDoc, getFirestore, query, where, collection, documentId, getDocs, updateDoc} from 'firebase/firestore';
+import {doc, setDoc, getFirestore, query, where, collection, documentId, getDocs, updateDoc, getDoc} from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/authContext.jsx';
 import {getStorage, getDownloadURL, ref, uploadBytes} from 'firebase/storage';
@@ -18,7 +18,9 @@ export default function Account() {
     const [username, setUsername] = useState('');
     const [reputation, setReputation] = useState(0);
     const [errorMessage, setErrorMessage] = useState('');
-    const [recentActivity, setRecentActivity] = useState('');
+
+    const [bio, setBio] = useState(null);
+    const [remainingCharacters, setRemainingCharacters] = useState(200);
 
     //listener for auth changes
     getAuth().onAuthStateChanged((user) => {
@@ -116,11 +118,62 @@ export default function Account() {
                                 </p>
 
                                 <h2 className="alignRight" style={{marginBottom: 0, paddingBottom: 0}}>
-                                    Recent activity:
+                                    Bio:
                                 </h2>
-                                <p className="noVerticalSpacing alignRight">
-                                    {recentActivity ? recentActivity : "We couldn't find any recent activity"}
-                                </p>
+                                {bio ? (
+                                    //if the user's has a bio, show the bio with an button to edit it
+                                    <React.Fragment>
+                                        <p className="alignRight noVerticalSpacing" style={{width: '80%', marginLeft: '18%'}}>
+                                            {bio}
+                                        </p>
+
+                                        <button type="button" onClick={() => {setBio(null)}}>
+                                            <h3 style={{float: 'right'}}>
+                                                Change your bio here
+                                            </h3>
+                                        </button>
+                                    </React.Fragment>
+                                ) : (
+                                    //if the user does not have a bio, show a button to add a bio
+                                    <React.Fragment>
+                                        <form id="bioForm" onSubmit={(event) => {bioFormSubmitted(event)}} onChange={(event) => {
+                                            const inputtedTextLength = event.currentTarget.userBioInput.value.length;
+                                            const remainingCharacters = 200 - inputtedTextLength;
+
+                                            if (remainingCharacters < 0) {
+                                                throw('Negative remaining characters');
+                                            }
+                                            else {
+                                                setRemainingCharacters(remainingCharacters);
+                                            };
+                                        }} >
+                                            <p className="noVerticalSpacing alignRight">
+                                                Create your bio:
+                                            </p>
+
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <td style={{width: '93%'}}>
+                                                            <textarea id="userBioInput" name="userBioInput" style={{width: '75%', marginRight: '10px', marginTop: '15px', marginBottom: '5px', paddingBottom: 0}} rows="4" maxLength={200} required placeholder="Write your bio..." >
+                                                            </textarea>
+                                                        </td>
+                                                        <td>
+                                                            <label htmlFor="submit">
+                                                                <SmartImage imagePath="interactiveElements/sendIcon.png" imageClasses="growOnHover"></SmartImage>
+                                                            </label>
+                                                            <input id="submit" name="submit" type="submit" value="Submit" style={{display: 'none'}}></input>
+                                                        </td>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+
+                                            <p className="noVerticalSpacing alignRight" style={{fontSize: '15px'}}>
+                                                {remainingCharacters}/200
+                                            </p>
+                                        </form>
+                                    </React.Fragment>
+                                )}
                             </td>
                         </tr>
                     </thead>
@@ -440,5 +493,34 @@ export default function Account() {
                 setUserProfilePictureURL(url);
             });
         });
+    };
+
+    async function bioFormSubmitted(event) {
+        event.preventDefault();
+        const userBio = event.currentTarget.userBioInput.value;
+
+        //once again, make sure the bio is less than 200 characters
+        if (userBio.length > 200) {
+            throw('Bio was too long');
+        }
+        else if (userBio.length <= 0) {
+            throw('Bio was not long enough');
+        }
+        else {
+
+            //bio was an acceptable length, write it to the user's bio section in firestore
+            const firestore = getFirestore();
+            try {
+                await updateDoc(doc(firestore, 'users', auth.uid),  {
+                    bio: userBio,
+                });
+
+                //if updating firestore was sucsessful, then update the local bio
+                setBio(userBio);
+            }
+            catch(error) {
+                throw(error);
+            };
+        };
     };
 };
