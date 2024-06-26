@@ -65,7 +65,7 @@ export default function UserProfile() {
                         </td>
 
                         <td>
-                            <h2 className="alignLeft">
+                            <h2 className="alignLeft noVerticalSpacing">
                                 Bio:
                             </h2>
                             <p className="alignLeft noVerticalSpacing" style={{marginLeft: '1%', width: '70%'}}>
