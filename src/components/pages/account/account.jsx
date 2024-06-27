@@ -381,11 +381,16 @@ export default function Account() {
             setLoggedIn(true);
         })
         .catch((error) => {
-            if (error.code === 'auth/too-many-requests') {
-                setErrorMessage('Too many login attempts, please try again later')
-            }
-            else {
-                setErrorMessage('Incorrect email or password')
+            switch(error.code) {
+                default:
+                    setErrorMessage('An unknown error occurred while attempting to log in');
+                    break;
+                case 'auth/too-many-requests':
+                    setErrorMessage('Too man login attempts, please try again later')
+                    break;
+                case 'auth/invalid-passsword':
+                    setErrorMessage('Incorrect email or password');
+                    break;
             };
             document.getElementById('loginHiddenErrorWrapper').classList.add('shown');
             console.error(error);
@@ -441,15 +446,17 @@ export default function Account() {
         })
 
         .catch((error) => {
-            if (error.code === 'auth/email-already-exists') {
-                setErrorMessage('There is already an account with the email address')
-            }
-            else if (error.code === 'auth/invalid-password') {
-                setErrorMessage('Your password must have at least six characters');
-            }
-            else {
-                setErrorMessage('We encountered an internal server error, please try again')
-            }
+            switch (error.code) {
+                default:
+                    setErrorMessage('An unknown error occurred, please try again')
+                    break;
+                case 'auth/email-already-exists':
+                    setErrorMessage('There is already an account with this email address')
+                    break;
+                case 'auth/invalid-password':
+                    setErrorMessage('Your password must have at least six characters');
+                    break;
+            };
             document.getElementById('signUpHiddenErrorWrapper').classList.add('shown');
             console.error(error);
         });
