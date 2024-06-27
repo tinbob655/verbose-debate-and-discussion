@@ -1,4 +1,4 @@
-div#todaysQuestionWrapper {
+div.todaysQuestionWrapper {
     border-radius: 20px;
     background-color: #171b1b;
     width: 80%;
@@ -33,5 +33,55 @@ div#yourResponseWrapper {
 
     &.shown {
         max-height: 500px;
+    }
+}
+
+div#pollOptionsWrapper {
+    transition-property: margin-left;
+    transition-duration: 1s;
+    transition-timing-function: ease;
+    max-width: 50%;
+    margin-left: 25%;
+
+    &.afterSubmission {
+        margin-left: 0;
+    }
+}
+
+input#pollSubmit {
+    transition-property: opacity;
+    transition-duration: 1s;
+    transition-timing-function: ease;
+
+    &.hidden {
+        opacity: 0;
+    }
+}
+
+div#pieChartWrapper {
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 1s;
+    transition-timing-function: ease;
+    width: 400px;
+    left: 25%;
+    top: 800px;
+    position: absolute;
+    visibility: hidden;
+
+    &.shown {
+        visibility: visible;
+        opacity: 1;
+    }
+}
+
+div#todaysQuestionPieWrapper {
+    transition-property: max-height;
+    transition-duration: 0.5s;
+    height: 700px;
+    max-height: 350px;
+    
+    &.extended {
+        max-height: 700px;
     }
 }

@@ -39,6 +39,7 @@ h3 {
 
     transition-property: transform;
     transition-duration: 0.5s;
+    transition-timing-function: ease;
     transform: scale(1);
 
     &:hover {
@@ -167,8 +168,9 @@ input {
         font-size: 25px;
         font-weight: 700;
 
-        transition-property: transform;
-        transition-duration: 0.5s;
+        transition-property: transform !important;
+        transition-duration: 0.5s !important;
+        transition-timing-function: ease;
 
         &:hover {
             transform: scale(1.1);

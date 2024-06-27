@@ -5,11 +5,16 @@ import SmartImage from '../../multi-page/smartImage.jsx';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/authContext.jsx';
 import {today} from '../../../index.js';
+import { PieChart } from 'react-minimal-pie-chart';
 import './homeStyles.scss';
 
 import { getTop5PostsComponents } from './functions/getTop5PostComments.js';
 import { questionResponseFormSubmitted } from './functions/questionResponseFormSubmitted.js';
 import { getUserProfilePicture } from './functions/getUserProfilePicture.js';
+import { pollResponseFormSubmitted } from './functions/pollResponseFormSubmitted.js';
+import { getPollRepsonseOptions } from './functions/getPollResponseOptions.js';
+import { getPieChartData } from './functions/getPieChartData.js';
+import { getPieChartKey } from './functions/getPieChartKey.js';
 
 export default function Home() {
 
@@ -21,6 +26,9 @@ export default function Home() {
     const [top5Posts, setTop5Posts] = useState(null);
     const [userProfilePicture, setUserProfilePicture] = useState('');
     const [respondButtonStyle, setRespondButtonStyle] = useState(null);
+    const [poll, setPoll] = useState('');
+    const [pieChartData, setPieChartData] = useState([]);
+    const [pollFormStyles, setPollFormStyles] = useState({marginRight: 'auto'});
 
     useEffect(() => {
 
@@ -29,6 +37,18 @@ export default function Home() {
            getUserProfilePicture(auth)
            .then((res) => {
             setUserProfilePicture(res);
+           });
+
+           //also check if the user has already voted in the poll
+           getDoc(doc(getFirestore(), 'polls', String(today().day))).then((doc) => {
+            if (doc.data().voters.indexOf(auth.uid) != -1) {
+
+                //the user has already voted
+                getPieChartData().then((dat) => {
+                    setPieChartData(dat);
+                    setPollFormStyles({visibility: 'hidden'});
+                });
+            };
            });
         }
         else {
@@ -72,7 +92,7 @@ export default function Home() {
 
             //get the top 5 posts by reputation from firestore
             let top5posts = [];
-            const top5PostsQuery = query(collection(firestore, 'questionResponses'), orderBy('votes', 'desc'), limit(5));
+            const top5PostsQuery = query(collection(firestore, 'questionResponses'), orderBy('votes', 'desc'), limit(3));
             const querySnap = await getDocs(top5PostsQuery);
             querySnap.forEach((doc) => {
                 top5posts.push(doc);
@@ -84,6 +104,28 @@ export default function Home() {
         getTop5Posts().then((posts) => {
             setTop5Posts(posts);
         });
+
+        //get today's poll from firestore
+        const firestore = getFirestore();
+        const currentDate =  today();
+        const pollQuery = query(collection(firestore, 'polls'), where(documentId(), '==', String(currentDate.day)), limit(1));
+        let options = [];
+        let pollQuestion = '';
+        getDocs(pollQuery)
+        .then((docs) => {
+            docs.forEach((doc) => {
+                pollQuestion = doc.data().question
+                doc.data().options.forEach((option) => {
+                    options.push(option);
+                });
+            });
+
+            setPoll({
+                question: pollQuestion,
+                options: options,
+            });
+        });
+
     }, []);
 
     return (
@@ -114,7 +156,7 @@ export default function Home() {
                         <td style={{width: '65%'}}>
 
                             {/*TODAY'S QUSETION SECTION*/}
-                            <div id="todaysQuestionWrapper">
+                            <div className="todaysQuestionWrapper">
                                 <h2>
                                     Today's Question:
                                 </h2>
@@ -125,7 +167,7 @@ export default function Home() {
                                         //if the user was not logged in, take them to the account page
                                         navigate('/account');
                                     };
-                                    document.getElementById('yourResponseWrapper').classList.add('shown');
+                                    document.getElementById('yourResponseWrapper').classList.toggle('shown');
                                 }}>
                                     <h3 style={respondButtonStyle}>
                                         {question}
@@ -154,6 +196,41 @@ export default function Home() {
                                             </thead>
                                         </table>
                                     </form>
+                                </div>
+                            </div>
+
+                            {/*POLL SECTION*/}
+                            <div className="todaysQuestionWrapper" id="todaysQuestionPieWrapper" style={{width: '75%', marginLeft: 0, marginTop: '5vh'}}>
+                                <h2>
+                                    Today's Poll:
+                                </h2>
+
+                                <p>
+                                    {poll ? poll.question : 'No poll available'}
+                                </p>
+                                {/*poll response form*/}
+                                <form id="pollResponseForm" style={pollFormStyles} onSubmit={(event) => {
+                                    if (auth) {
+                                        getPieChartData().then((data) => {setPieChartData(data)});
+                                        pollResponseFormSubmitted(event, poll.options, auth);
+                                    }
+                                    else navigate('/account');
+                                    }}>
+                                    <div id="pollOptionsWrapper">
+                                        {poll ? getPollRepsonseOptions(poll.options) : <></>}
+                                    </div>
+
+                                    <input type="submit" className="submit" value="Submit" id="pollSubmit"></input>
+                                </form>
+                                
+                                {/*pie chart key*/}
+                                <div id="pieChartKeyWrapper">
+                                    {getPieChartKey(pieChartData)}
+                                </div>
+                                
+                                {/*pie chart*/}
+                                <div id="pieChartWrapper">
+                                    <PieChart data={pieChartData.data} label={({dataEntry}) => `${Math.round(dataEntry.percentage)}%`} labelStyle={{fontFamily: 'Nunito', fontSize: '4px'}} style={{border: '5px solid #454545', borderRadius: '50%'}} />
                                 </div>
                             </div>
                         </td>
