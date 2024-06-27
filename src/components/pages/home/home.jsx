@@ -1,12 +1,15 @@
 import React, {useEffect, useState} from 'react';
-import {getDoc, doc, getFirestore, getDocs, orderBy, where, limit, query, collection, documentId, setDoc} from 'firebase/firestore';
+import {getDoc, doc, getFirestore, getDocs, orderBy, where, limit, query, collection, documentId} from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-import QuestionResponse from './questionResponse.jsx';
 import SmartImage from '../../multi-page/smartImage.jsx';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/authContext.jsx';
 import {today} from '../../../index.js';
 import './homeStyles.scss';
+
+import { getTop5PostsComponents } from './functions/getTop5PostComments.js';
+import { questionResponseFormSubmitted } from './functions/questionResponseFormSubmitted.js';
+import { getUserProfilePicture } from './functions/getUserProfilePicture.js';
 
 export default function Home() {
 
@@ -18,13 +21,15 @@ export default function Home() {
     const [top5Posts, setTop5Posts] = useState(null);
     const [userProfilePicture, setUserProfilePicture] = useState('');
     const [respondButtonStyle, setRespondButtonStyle] = useState(null);
-    const [forceReload, setForceReload] = useState(null);
 
     useEffect(() => {
 
         //if the user is logged in, fetch their profile picture
         if (auth) {
-            getUserProfilePicture();
+           getUserProfilePicture(auth)
+           .then((res) => {
+            setUserProfilePicture(res);
+           });
         }
         else {
 
@@ -79,7 +84,7 @@ export default function Home() {
         getTop5Posts().then((posts) => {
             setTop5Posts(posts);
         });
-    }, [forceReload]);
+    }, []);
 
     return (
         <React.Fragment>
@@ -128,7 +133,7 @@ export default function Home() {
                                 </button>
                                 <div id="yourResponseWrapper">
                                     <form id="yourResponseForm" onSubmit={(event) => {
-                                        questionResponseFormSubmitted(event);
+                                        questionResponseFormSubmitted(event, auth);
                                     }}>
                                         <table>
                                             <thead>
@@ -157,81 +162,11 @@ export default function Home() {
                             <h2>
                                 Top responses:
                             </h2>
-                            {getTop5PostsComponents()}
+                            {getTop5PostsComponents(top5Posts)}
                         </td>
                     </tr>
                 </thead>
             </table>
         </React.Fragment>
     );
-
-    function getTop5PostsComponents() {
-    
-        //only run if the posts have been fetched
-        if (!top5Posts) {
-            return <></>
-        }
-        else {
-            let top5PostsHTML = [];
-    
-            top5Posts.forEach((post) => {
-                top5PostsHTML.push(<QuestionResponse postData={post.data()} postersUserName={post.id}/>)
-            });
-    
-            return top5PostsHTML;
-        };
-    };
-    
-    function getUserProfilePicture() {
-    
-        const getUserFile = async() => {
-            const firestore = getFirestore();
-            const uid = auth.uid;
-            const userFileQuery = query(collection(firestore, 'users'), where(documentId(), '==', uid));
-            const userFileSnap = await getDocs(userFileQuery);
-    
-            let res = {};
-            userFileSnap.forEach((user) => {
-                res = user.data();
-            });
-    
-            return res;
-        }
-    
-        getUserFile()
-        .then((res) => {
-            setUserProfilePicture(res.profilePictureURL);
-        });
-    };
-
-    async function questionResponseFormSubmitted(event) {
-        event.preventDefault();
-
-        if (!auth) {
-            throw ('Auth was null');
-        };
-
-        const post = event.currentTarget.yourResponseText.value;
-        const firestore = getFirestore();
-        
-
-        //fetch the username from firestore
-        const usernameQuery = query(collection(firestore, 'users'), where(documentId(), '==', auth.uid));
-        getDocs(usernameQuery)
-        .then((docs) => {
-            docs.forEach((document) => {
-
-                const username = document.data().username;
-
-                setDoc(doc(firestore, 'questionResponses', username), {
-                    post: post,
-                    voters: [],
-                    votes: 0,
-                })
-                .then(() => {
-                    window.location.reload();
-                });
-            });
-        });
-    };
 };

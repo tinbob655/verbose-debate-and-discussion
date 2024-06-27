@@ -1,13 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import './accountStyles.scss';
 import SmartImage from '../../multi-page/smartImage.jsx';
-import {doc, setDoc, getFirestore, query, where, collection, documentId, getDocs, updateDoc, getDoc} from 'firebase/firestore';
+import {doc, setDoc, getFirestore, query, where, collection, documentId, getDocs, updateDoc} from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/authContext.jsx';
 import {getStorage, getDownloadURL, ref, uploadBytes} from 'firebase/storage';
 
+import { getPartyOptions } from './functions/getPartyOptions.js';
+import { signUserOut } from './functions/signUserOut.js';
+import { profilePictureFormSubmitted } from './functions/profilePictureFormSubmitted.js';
+import { bioFormSubmitted } from './functions/bioFormSubmitted.js';
+
 //auth modules
-import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut} from 'firebase/auth';
+import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword} from 'firebase/auth';
 
 export default function Account() {
 
@@ -52,6 +57,7 @@ export default function Account() {
                         pfp: user.data().profilePictureURL,
                         username: user.data().username,
                         reputation: user.data().reputation,
+                        bio: user.data().bio,
                     };
                 });
         
@@ -63,6 +69,7 @@ export default function Account() {
                 setUserProfilePictureURL(userData.pfp);
                 setUsername(userData.username);
                 setReputation(userData.reputation);
+                setBio(userData.bio);
             });
         };
 
@@ -102,7 +109,10 @@ export default function Account() {
                                     <SmartImage imagePath="interactiveElements/pencil.jpg" imageStyles={{height: 'auto', width: '25%', marginTop: '15px'}} imageClasses="centered growOnHover" />
                                 </label>
                                 <input type="file" id="imageUpload" accept="image/*" style={{display: 'none'}} onChange={(event) => {
-                                    profilePictureFormSubmitted(event.target.files[0]);
+                                    profilePictureFormSubmitted(event.target.files[0], auth, username)
+                                    .then((url) => {
+                                        setUserProfilePictureURL(url);
+                                    });
                                 }} />
                             </td>
                             <td style={{width: '75%', paddingRight: '2vw'}}>
@@ -136,7 +146,7 @@ export default function Account() {
                                 ) : (
                                     //if the user does not have a bio, show a button to add a bio
                                     <React.Fragment>
-                                        <form id="bioForm" onSubmit={(event) => {bioFormSubmitted(event)}} onChange={(event) => {
+                                        <form id="bioForm" onSubmit={(event) => {bioFormSubmitted(event, auth).then((bio) => {setBio(bio)})}} onChange={(event) => {
                                             const inputtedTextLength = event.currentTarget.userBioInput.value.length;
                                             const remainingCharacters = 200 - inputtedTextLength;
 
@@ -180,7 +190,7 @@ export default function Account() {
                 </table>
 
                 {/*SIGN OUT BUTTON*/}
-                <button type="button" onClick={() => {signUserOut()}}>
+                <button type="button" onClick={() => {setLoggedIn(signUserOut())}}>
                     <h3>
                         Sign out
                     </h3>
@@ -311,59 +321,6 @@ export default function Account() {
         </React.Fragment>
     );
 
-    function getPartyOptions() {
-        let partyOptionsHTML = [];
-        partyOptionsHTML.push(
-            <React.Fragment>
-                <table style={{width: '40%'}} className="centered">
-                    <thead>
-                        {getInnerPartyOptions()}
-                    </thead>
-                </table>
-            </React.Fragment>
-        );
-
-        function getInnerPartyOptions() {
-            let innerPartyOptionsHTML = [];
-            const partyOptions = [
-                {backendName: 'labour', frontendName: 'Labour Party'},
-                {backendName: 'conservative', frontendName: 'Conservative Party'},
-                {backendName: 'liberalDemocrats', frontendName: 'Liberal Democrats'},
-                {backendName: 'reformUK', frontendName: 'Reform UK'},
-                {backendName: 'green', frontendName: 'Green Party'},
-                {backendName: 'workersParty', frontendName: "Worker's Party"},
-                {backendName: 'scottishNationalParty', frontendName: 'Scottish National Party'},
-                {backendName: 'alba', frontendName: 'Alba Party'},
-                {backendName: 'sinnFein', frontendName: 'Sinn Féin'},
-                {backendName: 'plaidCymru', frontendName: 'Plaid Cymru'},
-                {backendName: 'alliancePartyOfNorthernIreland', frontendName: 'Alliance Party of Northern Ireland'},
-                {backendName: 'socialDemocraticAndLabourParty', frontendName: 'Social, Democratic and Labour Party'},
-                {backendName: 'democraticUnionistParty', frontendName: 'Democratic Unionist Party'},
-            ];
-
-            partyOptions.forEach((party) => {
-                innerPartyOptionsHTML.push(
-                    <React.Fragment>
-                        <tr>
-                            <td style={{width: '25%'}}>
-                                <input type="radio" id={party.backendName} className="radio growOnHover centered" name="politicalAllegiance" value={party.backendName} required></input>
-                            </td>
-                            <td>
-                                <label htmlFor={party.backendName} className="nextToRadio">
-                                    {party.frontendName}
-                                </label>
-                            </td>
-                        </tr>
-                    </React.Fragment>
-                );
-            });
-
-            return innerPartyOptionsHTML;
-        };
-
-        return partyOptionsHTML;
-    };
-
     function logInFormCompleted(event) {
         event.preventDefault();
 
@@ -460,74 +417,5 @@ export default function Account() {
             document.getElementById('signUpHiddenErrorWrapper').classList.add('shown');
             console.error(error);
         });
-    };
-
-    function signUserOut() {
-        const auth = getAuth();
-        signOut(auth)
-        .then(() => {
-            setLoggedIn(false);
-        })
-        .catch((error) => {
-            throw(error);
-        });
-    };
-
-    function profilePictureFormSubmitted(uploadedImage) {
-
-        //only run if a file was uploaded and auth exists
-        if (!uploadedImage || !auth) return;
-
-
-        //work out the file extension of the image uploaded
-        const filename = uploadedImage.name;
-        const fileExtension = filename.split('.')[1];
-
-        const storage = getStorage();
-        const imageRef = ref(storage, `uploadedProfilePictures/${username}.${fileExtension}`);
-        uploadBytes(imageRef, uploadedImage)
-        .then(() => {
-
-            //get the url of the uploaded image and set it as the profile picture url of the user in firestore
-            getDownloadURL(ref(storage, `uploadedProfilePictures/${username}.${fileExtension}`))
-            .then( async(url) => {
-                
-                const firestore = getFirestore();
-                await updateDoc(doc(firestore, 'users', auth.uid),  {
-                    profilePictureURL: url,
-                });
-
-                setUserProfilePictureURL(url);
-            });
-        });
-    };
-
-    async function bioFormSubmitted(event) {
-        event.preventDefault();
-        const userBio = event.currentTarget.userBioInput.value;
-
-        //once again, make sure the bio is less than 200 characters
-        if (userBio.length > 200) {
-            throw('Bio was too long');
-        }
-        else if (userBio.length <= 0) {
-            throw('Bio was not long enough');
-        }
-        else {
-
-            //bio was an acceptable length, write it to the user's bio section in firestore
-            const firestore = getFirestore();
-            try {
-                await updateDoc(doc(firestore, 'users', auth.uid),  {
-                    bio: userBio,
-                });
-
-                //if updating firestore was sucsessful, then update the local bio
-                setBio(userBio);
-            }
-            catch(error) {
-                throw(error);
-            };
-        };
     };
 };
