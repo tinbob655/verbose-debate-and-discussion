@@ -1,4 +1,5 @@
-import {getFirestore, query, collection, where, documentId, getDocs, setDoc, doc} from 'firebase/firestore';
+import {getFirestore, setDoc, doc, getDoc} from 'firebase/firestore';
+import { changeReputation } from '../../../multi-page/functions/changeReputation.js';
 
 export async function questionResponseFormSubmitted(event, auth) {
     event.preventDefault();
@@ -7,25 +8,27 @@ export async function questionResponseFormSubmitted(event, auth) {
         throw ('Auth was null');
     };
 
-    const post = event.currentTarget.yourResponseText.value;
     const firestore = getFirestore();
-    
-    //fetch the username from firestore
-    const usernameQuery = query(collection(firestore, 'users'), where(documentId(), '==', auth.uid));
-    getDocs(usernameQuery)
-    .then((docs) => {
-        docs.forEach((document) => {
 
-            const username = document.data().username;
+    //get the user's username
+    const userDoc = await getDoc(doc(firestore, 'users', auth.uid));
+    const username = userDoc.data().username;
+    const post = event.target.yourResponseText.value;
 
-            setDoc(doc(firestore, 'questionResponses', username), {
-                post: post,
-                voters: [],
-                votes: 0,
-            })
-            .then(() => {
-                window.location.reload();
-            });
-        });
+    //before writing to question responses, check if the user has already responded to today's question
+    const userQuestionResponse = await getDoc(doc(firestore, 'questionResponses', username));
+    const userAlreadyResponded = userQuestionResponse.exists() ? true : false;
+    //add to the user's reputation if it was their first time responding to today's question
+    if (!userAlreadyResponded) {
+        await changeReputation(2, auth.uid).catch((err) => {throw(err)});
+    };
+
+    //write the user's post to question responses
+    await setDoc(doc(firestore, 'questionResponses', username), {
+        post: post,
+        voters: [],
+        votes: 0,
     });
+
+    window.location.reload();
 };

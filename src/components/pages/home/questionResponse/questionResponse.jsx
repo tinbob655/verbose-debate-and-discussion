@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {getFirestore, query, where, collection, getDocs, updateDoc, increment, doc, getDoc, arrayUnion} from 'firebase/firestore';
 import { useAuth } from '../../../../context/authContext.jsx';
 import { Link, Navigate } from 'react-router-dom';
+import {changeReputation} from '../../../multi-page/functions/changeReputation.js';
 
 export default function QuestionRespnse({postData, postersUserName}) {
 
@@ -175,6 +176,10 @@ export default function QuestionRespnse({postData, postersUserName}) {
             await updateDoc(firestorePostRef, {
                 voters: arrayUnion(auth.uid),
             });
+
+            //alter the voter's reputation
+            await changeReputation(ammount, auth.uid);
+            setUserReputation(userReputation + ammount);
     
             //update local post votes
             setVotes(votes + ammount);

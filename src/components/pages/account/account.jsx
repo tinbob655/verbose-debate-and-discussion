@@ -16,7 +16,7 @@ import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword} fro
 
 export default function Account() {
 
-    const {auth, updateAuth} = useAuth();
+    const {auth} = useAuth();
 
     const [loggedIn, setLoggedIn] = useState(auth ? true : false);
     const [userProfilePictureURL, setUserProfilePictureURL] = useState(undefined);
@@ -26,11 +26,6 @@ export default function Account() {
 
     const [bio, setBio] = useState(null);
     const [remainingCharacters, setRemainingCharacters] = useState(200);
-
-    //listener for auth changes
-    getAuth().onAuthStateChanged((user) => {
-        updateAuth(user);
-    });
 
     useEffect(() => {
         
