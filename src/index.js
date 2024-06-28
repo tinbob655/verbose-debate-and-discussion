@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { firebaseSetup } from './firebase.js';
 import AllRoutes from './routes.jsx';
 import { AuthContextProvider } from './context/authContext.jsx';
+import AuthListener from './components/multi-page/authListener.jsx';
 
 import ScrollToTop from './components/multi-page/scrollToTop.jsx';
 import Footer from './components/multi-page/footer.jsx';
@@ -36,6 +37,7 @@ root.render(
       <ScrollToTop/>
 
       <AuthContextProvider>
+        <AuthListener/>
         <AllRoutes/>
         <Footer/>
       </AuthContextProvider>
