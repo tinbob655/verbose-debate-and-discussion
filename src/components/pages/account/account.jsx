@@ -393,6 +393,7 @@ export default function Account() {
                     username: username,
                     reputation: 0,
                     profilePictureURL: url,
+                    following: [],
                 });
 
                 setLoggedIn(true);
