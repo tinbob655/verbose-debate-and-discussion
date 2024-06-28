@@ -41,7 +41,7 @@ export default function Home() {
 
            //also check if the user has already voted in the poll
            getDoc(doc(getFirestore(), 'polls', String(today().day))).then((doc) => {
-            if (doc.data().voters.indexOf(auth.uid) != -1) {
+            if (doc.data() && doc.data().voters.indexOf(auth.uid) != -1) {
 
                 //the user has already voted
                 getPieChartData().then((dat) => {
@@ -206,31 +206,36 @@ export default function Home() {
                                 </h2>
 
                                 <p>
-                                    {poll ? poll.question : 'No poll available'}
+                                    {poll.question ? poll.question : 'No poll available'}
                                 </p>
                                 {/*poll response form*/}
-                                <form id="pollResponseForm" style={pollFormStyles} onSubmit={(event) => {
-                                    if (auth) {
-                                        getPieChartData().then((data) => {setPieChartData(data)});
-                                        pollResponseFormSubmitted(event, poll.options, auth);
-                                    }
-                                    else navigate('/account');
-                                    }}>
-                                    <div id="pollOptionsWrapper">
-                                        {poll ? getPollRepsonseOptions(poll.options) : <></>}
-                                    </div>
+                                <div id="entirePollAndPieChartWrapper" style={poll.question ? {} : {visibility: 'hidden', display: 'none'}}>
+                                    <form id="pollResponseForm" style={pollFormStyles} onSubmit={(event) => {
+                                        if (auth) {
+                                            pollResponseFormSubmitted(event, poll.options, auth).then(() => {
+                                                getPieChartData().then((data) => {
+                                                    setPieChartData(data)
+                                                });
+                                            });
+                                        }
+                                        else navigate('/account');
+                                        }}>
+                                        <div id="pollOptionsWrapper">
+                                            {poll ? getPollRepsonseOptions(poll.options) : <></>}
+                                        </div>
 
-                                    <input type="submit" className="submit" value="Submit" id="pollSubmit"></input>
-                                </form>
-                                
-                                {/*pie chart key*/}
-                                <div id="pieChartKeyWrapper">
-                                    {getPieChartKey(pieChartData)}
-                                </div>
-                                
-                                {/*pie chart*/}
-                                <div id="pieChartWrapper">
-                                    <PieChart data={pieChartData.data} label={({dataEntry}) => `${Math.round(dataEntry.percentage)}%`} labelStyle={{fontFamily: 'Nunito', fontSize: '4px'}} style={{border: '5px solid #454545', borderRadius: '50%'}} />
+                                        <input type="submit" className="submit" value="Submit" id="pollSubmit"></input>
+                                    </form>
+                                    
+                                    {/*pie chart key*/}
+                                    <div id="pieChartKeyWrapper">
+                                        {getPieChartKey(pieChartData)}
+                                    </div>
+                                    
+                                    {/*pie chart*/}
+                                    <div id="pieChartWrapper">
+                                        <PieChart data={pieChartData.data} label={({dataEntry}) => `${Math.round(dataEntry.percentage)}%`} labelStyle={{fontFamily: 'Nunito', fontSize: '4px'}} style={{border: '5px solid #454545', borderRadius: '50%'}} />
+                                    </div>
                                 </div>
                             </div>
                         </td>
