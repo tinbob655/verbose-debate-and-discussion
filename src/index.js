@@ -7,6 +7,7 @@ import { firebaseSetup } from './firebase.js';
 import AllRoutes from './routes.jsx';
 import { AuthContextProvider } from './context/authContext.jsx';
 
+import ScrollToTop from './components/multi-page/scrollToTop.jsx';
 import Footer from './components/multi-page/footer.jsx';
 
 export function today() {
@@ -32,6 +33,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <React.StrictMode>
+      <ScrollToTop/>
 
       <AuthContextProvider>
         <AllRoutes/>

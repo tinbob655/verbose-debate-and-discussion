@@ -73,6 +73,9 @@ export default function Account() {
             });
         };
 
+        //whenver the loggedIn state changes, scroll to the top of the page
+        window.scrollTo(0, 0);
+
     }, [loggedIn]);
 
     return(
