@@ -32,31 +32,6 @@ export default function Home() {
 
     useEffect(() => {
 
-        //if the user is logged in, fetch their profile picture
-        if (auth) {
-           getUserProfilePicture(auth)
-           .then((res) => {
-            setUserProfilePicture(res);
-           });
-
-           //also check if the user has already voted in the poll
-           getDoc(doc(getFirestore(), 'polls', String(today().day))).then((doc) => {
-            if (doc.data() && doc.data().voters.indexOf(auth.uid) != -1) {
-
-                //the user has already voted
-                getPieChartData().then((dat) => {
-                    setPieChartData(dat);
-                    setPollFormStyles({visibility: 'hidden'});
-                });
-            };
-           });
-        }
-        else {
-
-            //if the user is not logged in then grey out the respond button
-            setRespondButtonStyle({color: 'grey'});
-        }
-
         //get the question
         const getQuestion = async() => {
             
@@ -127,6 +102,34 @@ export default function Home() {
         });
 
     }, []);
+
+    useEffect(() => {
+        
+        //if the user is logged in, fetch their profile picture
+        if (auth) {
+            getUserProfilePicture(auth)
+            .then((res) => {
+             setUserProfilePicture(res);
+            });
+ 
+            //also check if the user has already voted in the poll
+            getDoc(doc(getFirestore(), 'polls', String(today().day))).then((doc) => {
+             if (doc.data() && doc.data().voters.indexOf(auth.uid) != -1) {
+ 
+                 //the user has already voted
+                 getPieChartData().then((dat) => {
+                     setPieChartData(dat);
+                     setPollFormStyles({visibility: 'hidden'});
+                 });
+             };
+            });
+         }
+         else {
+ 
+             //if the user is not logged in then grey out the respond button
+             setRespondButtonStyle({color: 'grey'});
+         }
+    }, [auth]);
 
     return (
         <React.Fragment>
