@@ -85,3 +85,28 @@ div#todaysQuestionPieWrapper {
         max-height: 700px;
     }
 }
+
+div.filterByWrapper {
+    background-color: #0f0f0f;
+    border-radius: 20px;
+    margin: 1px;
+    margin-bottom: 10px !important;
+    margin-top: 3px !important;
+    border: 3px solid #3f3f3f;
+
+    transition-property: background-color border;
+    transition-duration: 0.75s;
+    transition-timing-function: ease;
+
+    &:hover {
+        background-color: #202020;
+        border: 3px solid #858383;
+    }
+
+    &.activeMode {
+
+        //marked as !important so they are not overrided by hover
+        background-color: #303030 !important;
+        border: 3px solid white !important;
+    }
+}

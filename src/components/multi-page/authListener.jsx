@@ -6,7 +6,6 @@ export default function AuthListener() {
 
     //listener for auth changes
     getAuth().onAuthStateChanged((user) => {
-        console.log(user)
         updateAuth(user);
     });
 };

@@ -15,6 +15,7 @@ import { pollResponseFormSubmitted } from './functions/pollResponseFormSubmitted
 import { getPollRepsonseOptions } from './functions/getPollResponseOptions.js';
 import { getPieChartData } from './functions/getPieChartData.js';
 import { getPieChartKey } from './functions/getPieChartKey.js';
+import { filterTopResponsesBy } from './functions/filterTopResponsesBy.js';
 
 export default function Home() {
 
@@ -23,12 +24,14 @@ export default function Home() {
     const {auth} = useAuth();
 
     const [question, setQuestion] = useState('');
-    const [top5Posts, setTop5Posts] = useState(null);
+    const [top5PostsHTML, setTop5PostsHTML] = useState(null);
     const [userProfilePicture, setUserProfilePicture] = useState('');
     const [respondButtonStyle, setRespondButtonStyle] = useState(null);
     const [poll, setPoll] = useState('');
     const [pieChartData, setPieChartData] = useState([]);
     const [pollFormStyles, setPollFormStyles] = useState({marginRight: 'auto'});
+    const [tenSecondTimer, setTenSectiondTimer] = useState(true);
+    const [pleaseWaitMessage, setPleaseWaitMessage] = useState(null);
 
     useEffect(() => {
 
@@ -77,7 +80,7 @@ export default function Home() {
         };
 
         getTop5Posts().then((posts) => {
-            setTop5Posts(posts);
+            setTop5PostsHTML(getTop5PostsComponents(posts));
         });
 
         //get today's poll from firestore
@@ -130,6 +133,20 @@ export default function Home() {
              setRespondButtonStyle({color: 'grey'});
          }
     }, [auth]);
+
+    useEffect(() => {
+        if (!tenSecondTimer) {
+            setTimeout(() => {
+                setTenSectiondTimer(true);
+            }, 10000);
+        };
+    }, [tenSecondTimer]);
+
+    useEffect(() => {
+        setTimeout(() => {
+            setPleaseWaitMessage(null);
+        }, 2000);
+    }, [pleaseWaitMessage]);
 
     return (
         <React.Fragment>
@@ -247,7 +264,84 @@ export default function Home() {
                             <h2>
                                 Top responses:
                             </h2>
-                            {getTop5PostsComponents(top5Posts)}
+
+                            {/*filter by...*/}
+                            <p className="noVerticalSpacing">
+                                {pleaseWaitMessage ? pleaseWaitMessage : 'Filter by:'}
+                            </p>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <td>
+                                            <div className="filterByWrapper activeMode" id="filterByVotesWrapper">
+                                                <button type="button" onClick={() => {
+                                                    if (tenSecondTimer) {
+                                                        setTenSectiondTimer(false);
+                                                        setTop5PostsHTML(<h2>Loading...</h2>);
+                                                        filterTopResponsesBy('votes', auth.uid).then((res) => {
+                                                            setTop5PostsHTML(res);
+                                                        });
+                                                    }
+                                                    else {
+
+                                                        //tell the user that they must wait 10 seconds
+                                                        setPleaseWaitMessage('Please wait 10 seconds');
+                                                    }
+                                                    }}>
+                                                    <h3 className="noVerticalSpacing">
+                                                        Votes
+                                                    </h3>
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="filterByWrapper" id="filterByReputationWrapper">
+                                                <button type="button" onClick={() => {
+                                                    if (tenSecondTimer) {
+                                                        setTenSectiondTimer(false);
+                                                        setTop5PostsHTML(<h2>Loading...</h2>);
+                                                        filterTopResponsesBy('reputation', auth.uid).then((res) => {
+                                                            setTop5PostsHTML(res)
+                                                        });
+                                                    }
+                                                    else {
+
+                                                        //tell the user that they must wait 10 seconds
+                                                        setPleaseWaitMessage('Please wait 10 seconds');
+                                                    }
+                                                    }}>
+                                                    <h3 className="noVerticalSpacing">
+                                                        Reputation
+                                                    </h3>
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="filterByWrapper" id="filterByFollowingWrapper">
+                                                <button type="button" onClick={() => {
+                                                    if (tenSecondTimer) {
+                                                        setTenSectiondTimer(false);
+                                                        setTop5PostsHTML(<h2>Loading...</h2>)
+                                                        filterTopResponsesBy('following', auth.uid).then((res) => {
+                                                            setTop5PostsHTML(res);
+                                                        });
+                                                    }
+                                                    else {
+
+                                                        //tell the user that they must wait 10 seconds
+                                                        setPleaseWaitMessage('Please wait 10 seconds');
+                                                    }
+                                                    }}>
+                                                    <h3 className="noVerticalSpacing">
+                                                        Following
+                                                    </h3>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </thead>
+                            </table>
+                            {top5PostsHTML}
                         </td>
                     </tr>
                 </thead>
