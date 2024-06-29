@@ -87,6 +87,8 @@ export async function filterTopResponsesBy(filterMode, uid) {
                 i++;
             };
 
+            console.log('test')
+
             return getTop5PostsComponents(followingFilterArray);
     };
 };
