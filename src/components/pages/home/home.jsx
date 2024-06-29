@@ -126,6 +126,9 @@ export default function Home() {
                  });
              };
             });
+
+            //the user is logged in, so make the question and the poll not greyed out
+            setRespondButtonStyle(null);
          }
          else {
  
