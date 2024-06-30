@@ -1,7 +1,7 @@
 import { getTop5PostsComponents } from "./getTop5PostComments.js";
 import {getFirestore, getDocs, query, collection, limit, orderBy, where, documentId, getDoc, doc} from 'firebase/firestore';
 
-export async function filterTopResponsesBy(filterMode, uid) {
+export async function filterTopResponsesBy(filterMode, auth) {
 
     //update frontend
     document.querySelectorAll('.filterByWrapper').forEach((wrapperDiv) => {
@@ -60,7 +60,8 @@ export async function filterTopResponsesBy(filterMode, uid) {
             return getTop5PostsComponents(top5PostsArray);
 
         case 'following':
-            if (!uid) throw('No uid provided');
+            if (!auth) throw('No auth provided');
+            const uid = auth.uid;
             
             //if the selected filtering mode was 'following', then get a list of the current user's followers
             const userFile = await getDoc(doc(firestore, 'users', uid));

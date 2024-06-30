@@ -288,7 +288,7 @@ export default function Home() {
                                                     if (!pleaseWaitMessage) {
                                                         setTimerActive(true);
                                                         setTop5PostsHTML(<h2>Loading...</h2>);
-                                                        filterTopResponsesBy('votes', auth.uid).then((res) => {
+                                                        filterTopResponsesBy('votes', auth).then((res) => {
                                                             setTop5PostsHTML(res);
                                                         });
                                                     };
@@ -305,7 +305,7 @@ export default function Home() {
                                                     if (!pleaseWaitMessage) {
                                                         setTimerActive(true);
                                                         setTop5PostsHTML(<h2>Loading...</h2>);
-                                                        filterTopResponsesBy('reputation', auth.uid).then((res) => {
+                                                        filterTopResponsesBy('reputation', auth).then((res) => {
                                                             setTop5PostsHTML(res)
                                                         });
                                                     };
@@ -321,10 +321,15 @@ export default function Home() {
                                                 <button type="button" onClick={() => {
                                                     if (!pleaseWaitMessage) {
                                                         setTimerActive(true);
-                                                        setTop5PostsHTML(<h2>Loading...</h2>)
-                                                        filterTopResponsesBy('following', auth.uid).then((res) => {
-                                                            setTop5PostsHTML(res);
-                                                        });
+                                                        setTop5PostsHTML(<h2>Loading...</h2>);
+                                                        if (!auth) {
+                                                            navigate('/account');
+                                                        }
+                                                        else {
+                                                            filterTopResponsesBy('following', auth).then((res) => {
+                                                                setTop5PostsHTML(res);
+                                                            });
+                                                        };
                                                     };
                                                     }}>
                                                     <h3 className="noVerticalSpacing">
