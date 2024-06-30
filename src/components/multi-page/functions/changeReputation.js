@@ -9,7 +9,7 @@ export async function changeReputation(ammount, uid) {
         const userDocRef = doc(firestore, 'users', uid);
     
         await updateDoc(userDocRef, {
-            reputation: increment(ammount),
+            reputation: increment(1),
         });
     }
     else throw(`Can only change reputation by a value of +-${bound}`);
