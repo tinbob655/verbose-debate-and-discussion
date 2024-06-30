@@ -264,7 +264,7 @@ export default function Home() {
                                     
                                     {/*pie chart*/}
                                     <div id="pieChartWrapper">
-                                        <PieChart data={pieChartData.data} label={({dataEntry}) => `${Math.round(dataEntry.percentage)}%`} labelStyle={{fontFamily: 'Nunito', fontSize: '4px'}} style={{border: '5px solid #454545', borderRadius: '50%'}} />
+                                        <PieChart data={pieChartData.data} label={({dataEntry}) => `${dataEntry.percentage === 0 ? '' : Math.round(dataEntry.percentage)+'%'}`} labelStyle={{fontFamily: 'Nunito', fontSize: '4px'}} style={{border: '5px solid #454545', borderRadius: '50%'}} />
                                     </div>
                                 </div>
                             </div>

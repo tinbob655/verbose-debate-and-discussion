@@ -78,11 +78,11 @@ div#pieChartWrapper {
 div#todaysQuestionPieWrapper {
     transition-property: max-height;
     transition-duration: 0.5s;
-    height: 700px;
+    height: 800px;
     max-height: 500px;
     
     &.extended {
-        max-height: 700px;
+        max-height: 800px;
     }
 }
 
