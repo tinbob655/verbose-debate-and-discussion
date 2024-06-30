@@ -178,7 +178,7 @@ export default function QuestionRespnse({postData, postersUserName}) {
             });
 
             //alter the voter's reputation
-            await changeReputation(ammount, auth.uid);
+            await changeReputation(1, auth.uid);
             setUserReputation(userReputation + ammount);
     
             //update local post votes
