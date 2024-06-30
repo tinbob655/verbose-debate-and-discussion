@@ -336,7 +336,7 @@ export default function Home() {
                                     </tr>
                                 </thead>
                             </table>
-                            {top5PostsHTML}
+                            {top5PostsHTML && top5PostsHTML.length > 0 ? top5PostsHTML : <p>No responses available</p>}
                         </td>
                     </tr>
                 </thead>
