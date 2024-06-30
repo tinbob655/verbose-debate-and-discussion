@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import './accountStyles.scss';
 import SmartImage from '../../multi-page/smartImage.jsx';
-import {doc, setDoc, getFirestore, query, where, collection, documentId, getDocs, updateDoc} from 'firebase/firestore';
+import {doc, setDoc, getFirestore, query, where, collection, documentId, getDocs} from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/authContext.jsx';
-import {getStorage, getDownloadURL, ref, uploadBytes} from 'firebase/storage';
+import {getStorage, getDownloadURL, ref} from 'firebase/storage';
+import { useNavigate } from 'react-router-dom';
 
 import { getPartyOptions } from './functions/getPartyOptions.js';
 import { signUserOut } from './functions/signUserOut.js';
@@ -23,9 +24,12 @@ export default function Account() {
     const [username, setUsername] = useState('');
     const [reputation, setReputation] = useState(0);
     const [errorMessage, setErrorMessage] = useState('');
+    const [adminPage, setAdminPage] = useState(null);
 
     const [bio, setBio] = useState(null);
     const [remainingCharacters, setRemainingCharacters] = useState(200);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         
@@ -38,6 +42,12 @@ export default function Account() {
             //if there is no user, then do not proceed
             if (!user) {
                 throw('auth.uid was null')
+            };
+
+            //if the user is admin, take them to the admin page
+            if (auth.uid === process.env.REACT_APP_ADMIN_UID) {
+                navigate('/admin');
+                return;
             };
     
             //get the user's data from firestore
