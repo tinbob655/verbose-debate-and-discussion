@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { firebaseSetup } from './firebase.js';
 import AllRoutes from './routes.jsx';
 import { AuthContextProvider } from './context/authContext.jsx';
+import { IsMobileContextProvider } from './context/isMobileContext.jsx';
 import AuthListener from './components/multi-page/authListener.jsx';
 
 import ScrollToTop from './components/multi-page/scrollToTop.jsx';
@@ -34,16 +35,19 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <React.StrictMode>
-      <ScrollToTop/>
+        <ScrollToTop/>
 
-      <AuthContextProvider>
-        <AuthListener/>
-        <AllRoutes/>
-        <Footer/>
-      </AuthContextProvider>
+        <AuthContextProvider>
+          <IsMobileContextProvider>
 
-      <Analytics/>
+            <AuthListener/>
+            <AllRoutes/>
+            <Footer/>
 
+          </IsMobileContextProvider>
+        </AuthContextProvider>
+
+        <Analytics/>
     </React.StrictMode>
   </BrowserRouter>
 );
