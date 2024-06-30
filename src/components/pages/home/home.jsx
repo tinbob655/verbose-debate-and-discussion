@@ -30,8 +30,8 @@ export default function Home() {
     const [poll, setPoll] = useState('');
     const [pieChartData, setPieChartData] = useState([]);
     const [pollFormStyles, setPollFormStyles] = useState({marginRight: 'auto'});
-    const [tenSecondTimer, setTenSectiondTimer] = useState(true);
     const [pleaseWaitMessage, setPleaseWaitMessage] = useState(null);
+    const [timerActive, setTimerActive] = useState(false);
 
     useEffect(() => {
 
@@ -138,18 +138,25 @@ export default function Home() {
     }, [auth]);
 
     useEffect(() => {
-        if (!tenSecondTimer) {
-            setTimeout(() => {
-                setTenSectiondTimer(true);
-            }, 10000);
-        };
-    }, [tenSecondTimer]);
 
-    useEffect(() => {
-        setTimeout(() => {
-            setPleaseWaitMessage(null);
-        }, 2000);
-    }, [pleaseWaitMessage]);
+        if (timerActive) {
+
+            let timer = 9;
+            setPleaseWaitMessage('PLease wait 10 seconds before changing filter again')
+    
+            const timerInterval = setInterval(() => {
+                if (timer > 0) {
+                    setPleaseWaitMessage(`Please wait ${timer} ${timer === 1 ? 'second' : 'seconds'} before changing filter again`);
+                    timer--;
+                }
+                else {
+                    clearInterval(timerInterval);
+                    setPleaseWaitMessage(null);
+                    setTimerActive(false);
+                };
+            }, 1000);
+        };
+    }, [timerActive]);
 
     return (
         <React.Fragment>
@@ -278,18 +285,13 @@ export default function Home() {
                                         <td>
                                             <div className="filterByWrapper activeMode" id="filterByVotesWrapper">
                                                 <button type="button" onClick={() => {
-                                                    if (tenSecondTimer) {
-                                                        setTenSectiondTimer(false);
+                                                    if (!pleaseWaitMessage) {
+                                                        setTimerActive(true);
                                                         setTop5PostsHTML(<h2>Loading...</h2>);
                                                         filterTopResponsesBy('votes', auth.uid).then((res) => {
                                                             setTop5PostsHTML(res);
                                                         });
-                                                    }
-                                                    else {
-
-                                                        //tell the user that they must wait 10 seconds
-                                                        setPleaseWaitMessage('Please wait 10 seconds');
-                                                    }
+                                                    };
                                                     }}>
                                                     <h3 className="noVerticalSpacing">
                                                         Votes
@@ -300,18 +302,13 @@ export default function Home() {
                                         <td>
                                             <div className="filterByWrapper" id="filterByReputationWrapper">
                                                 <button type="button" onClick={() => {
-                                                    if (tenSecondTimer) {
-                                                        setTenSectiondTimer(false);
+                                                    if (!pleaseWaitMessage) {
+                                                        setTimerActive(true);
                                                         setTop5PostsHTML(<h2>Loading...</h2>);
                                                         filterTopResponsesBy('reputation', auth.uid).then((res) => {
                                                             setTop5PostsHTML(res)
                                                         });
-                                                    }
-                                                    else {
-
-                                                        //tell the user that they must wait 10 seconds
-                                                        setPleaseWaitMessage('Please wait 10 seconds');
-                                                    }
+                                                    };
                                                     }}>
                                                     <h3 className="noVerticalSpacing">
                                                         Reputation
@@ -322,18 +319,13 @@ export default function Home() {
                                         <td>
                                             <div className="filterByWrapper" id="filterByFollowingWrapper">
                                                 <button type="button" onClick={() => {
-                                                    if (tenSecondTimer) {
-                                                        setTenSectiondTimer(false);
+                                                    if (!pleaseWaitMessage) {
+                                                        setTimerActive(true);
                                                         setTop5PostsHTML(<h2>Loading...</h2>)
                                                         filterTopResponsesBy('following', auth.uid).then((res) => {
                                                             setTop5PostsHTML(res);
                                                         });
-                                                    }
-                                                    else {
-
-                                                        //tell the user that they must wait 10 seconds
-                                                        setPleaseWaitMessage('Please wait 10 seconds');
-                                                    }
+                                                    };
                                                     }}>
                                                     <h3 className="noVerticalSpacing">
                                                         Following
