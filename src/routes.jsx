@@ -6,6 +6,7 @@ import Home from './components/pages/home/home.jsx';
 import Account from './components/pages/account/account.jsx';
 import Admin from './components/pages/admin/admin.jsx';
 import UserProfile from './components/pages/userProfile/userProfile.jsx';
+import AllPosts from './components/pages/allPosts/allPosts.jsx';
 
 class AllRoutes extends Component {
 
@@ -23,6 +24,7 @@ class AllRoutes extends Component {
             account: <Account/>,
             userProfile: <UserProfile/>,
             admin: <Admin/>,
+            allPosts: <AllPosts/>,
         };
         let routeHTML = [];
 

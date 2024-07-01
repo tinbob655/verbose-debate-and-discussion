@@ -347,6 +347,11 @@ export default function Home() {
                                     </thead>
                                 </table>
                                 {top5PostsHTML && top5PostsHTML.length > 0 ? top5PostsHTML : <p>No responses available</p>}
+                                <Link to="/allPosts">
+                                    <h3>
+                                        View all posts
+                                    </h3>
+                                </Link>
                             </td>
                         </tr>
                     </thead>
@@ -507,6 +512,12 @@ export default function Home() {
                         </thead>
                     </table>
                     {top5PostsHTML && top5PostsHTML.length > 0 ? top5PostsHTML : <p>No responses available</p>}
+
+                    <Link to="/allPosts">
+                        <h3>
+                            View all posts
+                        </h3>
+                    </Link>
                 </div>
     
     
