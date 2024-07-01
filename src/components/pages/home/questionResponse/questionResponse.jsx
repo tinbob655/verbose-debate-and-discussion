@@ -106,9 +106,19 @@ export default function QuestionRespnse({postData, postersUserName}) {
                 <thead>
                     <tr>
                         <td style={isMobile ? {width: '60%'} : {width: '80%'}}>
-                            <h2 style={{marginTop: 0, paddingTop: 0, marginBottom: 0, paddingBottom: '2vh', fontSize: '25px'}}>
-                                {userPost}
-                            </h2>
+                            {isMobile ? (
+                                <React.Fragment>
+                                    <p tyle={{marginTop: 0, paddingTop: 0, marginBottom: 0, paddingBottom: '2vh', fontSize: '25px'}}>
+                                        {userPost}
+                                    </p>
+                                </React.Fragment>
+                            ) : (
+                                <React.Fragment>
+                                    <h2 style={{marginTop: 0, paddingTop: 0, marginBottom: 0, paddingBottom: '2vh', fontSize: '25px'}}>
+                                        {userPost}
+                                    </h2>
+                                </React.Fragment>
+                            )}
                         </td>
                         <td>
 
