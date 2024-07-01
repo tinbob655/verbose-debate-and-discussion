@@ -25,6 +25,7 @@ export default function Home() {
     const {auth} = useAuth();
     const {isMobile} = useIsMobile();
 
+    const [noMoney, setNoMoney] = useState(null);
     const [question, setQuestion] = useState('');
     const [top5PostsHTML, setTop5PostsHTML] = useState(null);
     const [userProfilePicture, setUserProfilePicture] = useState('');
@@ -49,7 +50,18 @@ export default function Home() {
                 let docRef = doc(firestore, 'questions', currentDate.month);
                 question = (await getDoc(docRef)).data()[currentDate.day];
             }
-            catch {};
+            catch(error) {
+                if (error.code == 'resource-exhausted') {
+                    setNoMoney(<React.Fragment>
+                        <h1>
+                            We just ran out of money (lollll)
+                        </h1>
+                        <p>
+                            Plz come back tomorrow
+                        </p>
+                    </React.Fragment>)
+                };
+            };
 
             //if there was no question provided today
             if (typeof question !== 'string') {
@@ -160,6 +172,9 @@ export default function Home() {
         };
     }, [timerActive]);
 
+    if (noMoney) {
+        return noMoney;
+    };
     //desktop page
     if (!isMobile) {
 
