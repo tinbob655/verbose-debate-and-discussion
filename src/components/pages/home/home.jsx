@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import SmartImage from '../../multi-page/smartImage.jsx';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/authContext.jsx';
+import { useIsMobile } from '../../../context/isMobileContext.jsx';
 import {today} from '../../../index.js';
 import { PieChart } from 'react-minimal-pie-chart';
 import './homeStyles.scss';
@@ -22,6 +23,7 @@ export default function Home() {
     const navigate = useNavigate();
 
     const {auth} = useAuth();
+    const {isMobile} = useIsMobile();
 
     const [question, setQuestion] = useState('');
     const [top5PostsHTML, setTop5PostsHTML] = useState(null);
@@ -158,194 +160,396 @@ export default function Home() {
         };
     }, [timerActive]);
 
-    return (
-        <React.Fragment>
+    //desktop page
+    if (!isMobile) {
 
-            <h1 style={{paddingTop: '3vh', paddingBottom: 0, marginTop: 0, marginBottom: 0, fontSize: '70px'}}>
-                Verbose
-            </h1>
-
-            {/*account button*/}
-            <div style={{position: 'absolute', top: 0, right: '5px'}}>
-                <Link to='/account'>
-                <button type="button">
-                    <SmartImage imagePath={!auth ? 'interactiveElements/accountIcon.png' : null} imageURL={auth ? userProfilePicture : null} imageStyles={auth ? {height: '7vw', width: '7vw', border: '5px solid #353535', marginRight: '1vw'} : {height: '150px', width: 'auto'}} imageClasses={auth ? 'growOnHover profilePicture' : 'growOnHover'} />
-                </button>
-                </Link>
-            </div>
-
-            <p style={{padding: 0, margin: 0}}>
-                Debate and Discussion
-            </p>
-
-            <div className="dividerLine"></div>
-
-            <table style={{tableLayout: 'unset', padding: '2%'}}>
-                <thead>
-                    <tr>
-                        <td style={{width: '65%'}}>
-
-                            {/*TODAY'S QUSETION SECTION*/}
-                            <div className="todaysQuestionWrapper">
-                                <h2>
-                                    Today's Question:
-                                </h2>
-
-                                <button type="button" onClick={() => {
-                                    if (!auth) {
-
-                                        //if the user was not logged in, take them to the account page
-                                        navigate('/account');
-                                    };
-                                    document.getElementById('yourResponseWrapper').classList.toggle('shown');
-                                }}>
-                                    <h3 style={respondButtonStyle}>
-                                        {question}
-                                    </h3>
-                                </button>
-                                <div id="yourResponseWrapper">
-                                    <form id="yourResponseForm" onSubmit={(event) => {
-                                        questionResponseFormSubmitted(event, auth);
+        return (
+            <React.Fragment>
+    
+                <h1 style={{paddingTop: '3vh', paddingBottom: 0, marginTop: 0, marginBottom: 0, fontSize: '70px'}}>
+                    Verbose
+                </h1>
+    
+                {/*account button*/}
+                <div style={{position: 'absolute', top: 0, right: '5px'}}>
+                    <Link to='/account'>
+                    <button type="button">
+                        <SmartImage imagePath={!auth ? 'interactiveElements/accountIcon.png' : null} imageURL={auth ? userProfilePicture : null} imageStyles={auth ? {height: '7vw', width: '7vw', border: '5px solid #353535', marginRight: '1vw'} : {height: '150px', width: 'auto'}} imageClasses={auth ? 'growOnHover profilePicture' : 'growOnHover'} />
+                    </button>
+                    </Link>
+                </div>
+    
+                <p style={{padding: 0, margin: 0}}>
+                    Debate and Discussion
+                </p>
+    
+                <div className="dividerLine"></div>
+    
+                <table style={{tableLayout: 'unset', padding: '2%'}}>
+                    <thead>
+                        <tr>
+                            <td style={{width: '65%'}}>
+    
+                                {/*TODAY'S QUSETION SECTION*/}
+                                <div className="todaysQuestionWrapper">
+                                    <h2>
+                                        Today's Question:
+                                    </h2>
+    
+                                    <button type="button" onClick={() => {
+                                        if (!auth) {
+    
+                                            //if the user was not logged in, take them to the account page
+                                            navigate('/account');
+                                        };
+                                        document.getElementById('yourResponseWrapper').classList.toggle('shown');
                                     }}>
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <td style={{width: '90%'}}>
-                                                        <p className="noVerticalSpacing" style={{marginBottom: '2vh'}}>
-                                                            Your response:
-                                                        </p>
-                                                        <textarea id="yourResponseText" name="yourResponseText" style={{width: '95%'}} rows="4" required placeholder="Write your response..."></textarea>
-                                                    </td>
-                                                    <td>
-                                                        <label htmlFor="submit">
-                                                            <SmartImage imagePath="interactiveElements/sendIcon.png" imageClasses="growOnHover" />
-                                                        </label>
-                                                        <input type="submit" id="submit" name="submit" value="submit" style={{display: 'none'}}></input>
-                                                    </td>
-                                                </tr>
-                                            </thead>
-                                        </table>
-                                    </form>
-                                </div>
-                            </div>
-
-                            {/*POLL SECTION*/}
-                            <div className="todaysQuestionWrapper" id="todaysQuestionPieWrapper" style={{width: '75%', marginLeft: 0, marginTop: '5vh'}}>
-                                <h2>
-                                    Today's Poll:
-                                </h2>
-
-                                <p>
-                                    {poll.question ? poll.question : 'No poll available'}
-                                </p>
-                                {/*poll response form*/}
-                                <div id="entirePollAndPieChartWrapper" style={poll.question ? {} : {visibility: 'hidden', display: 'none'}}>
-                                    <form id="pollResponseForm" style={pollFormStyles} onSubmit={(event) => {
-                                        if (auth) {
-                                            pollResponseFormSubmitted(event, poll.options, auth).then(() => {
-                                                getPieChartData().then((data) => {
-                                                    setPieChartData(data)
-                                                });
-                                            });
-                                        }
-                                        else navigate('/account');
+                                        <h3 style={respondButtonStyle}>
+                                            {question}
+                                        </h3>
+                                    </button>
+                                    <div id="yourResponseWrapper">
+                                        <form id="yourResponseForm" onSubmit={(event) => {
+                                            questionResponseFormSubmitted(event, auth);
                                         }}>
-                                        <div id="pollOptionsWrapper">
-                                            {poll ? getPollRepsonseOptions(poll.options) : <></>}
-                                        </div>
-
-                                        <input type="submit" className="submit" value="Submit" id="pollSubmit"></input>
-                                    </form>
-                                    
-                                    {/*pie chart key*/}
-                                    <div id="pieChartKeyWrapper">
-                                        {getPieChartKey(pieChartData)}
-                                    </div>
-                                    
-                                    {/*pie chart*/}
-                                    <div id="pieChartWrapper">
-                                        <PieChart data={pieChartData.data} label={({dataEntry}) => `${dataEntry.percentage === 0 ? '' : Math.round(dataEntry.percentage)+'%'}`} labelStyle={{fontFamily: 'Nunito', fontSize: '4px'}} style={{border: '5px solid #454545', borderRadius: '50%'}} />
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <td style={{width: '90%'}}>
+                                                            <p className="noVerticalSpacing" style={{marginBottom: '2vh'}}>
+                                                                Your response:
+                                                            </p>
+                                                            <textarea id="yourResponseText" name="yourResponseText" style={{width: '95%'}} rows="4" required placeholder="Write your response..."></textarea>
+                                                        </td>
+                                                        <td>
+                                                            <label htmlFor="submit">
+                                                                <SmartImage imagePath="interactiveElements/sendIcon.png" imageClasses="growOnHover" />
+                                                            </label>
+                                                            <input type="submit" id="submit" name="submit" value="submit" style={{display: 'none'}}></input>
+                                                        </td>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </form>
                                     </div>
                                 </div>
-                            </div>
-                        </td>
-                        <td>
-                            {/*TOP RESPONSES SECTION*/}
-                            <h2>
-                                Top responses:
-                            </h2>
-
-                            {/*filter by...*/}
-                            <p className="noVerticalSpacing">
-                                {pleaseWaitMessage ? pleaseWaitMessage : 'Filter by:'}
-                            </p>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <td>
-                                            <div className="filterByWrapper activeMode" id="filterByVotesWrapper">
-                                                <button type="button" onClick={() => {
-                                                    if (!pleaseWaitMessage) {
-                                                        setTimerActive(true);
-                                                        setTop5PostsHTML(<h2>Loading...</h2>);
-                                                        filterTopResponsesBy('votes', auth).then((res) => {
-                                                            setTop5PostsHTML(res);
-                                                        });
-                                                    };
-                                                    }}>
-                                                    <h3 className="noVerticalSpacing">
-                                                        Votes
-                                                    </h3>
-                                                </button>
+    
+                                {/*POLL SECTION*/}
+                                <div className="todaysQuestionWrapper" id="todaysQuestionPieWrapper" style={{width: '75%', marginLeft: 0, marginTop: '5vh'}}>
+                                    <h2>
+                                        Today's Poll:
+                                    </h2>
+    
+                                    <p>
+                                        {poll.question ? poll.question : 'No poll available'}
+                                    </p>
+                                    {/*poll response form*/}
+                                    <div id="entirePollAndPieChartWrapper" style={poll.question ? {} : {visibility: 'hidden', display: 'none'}}>
+                                        <form id="pollResponseForm" style={pollFormStyles} onSubmit={(event) => {
+                                            if (auth) {
+                                                pollResponseFormSubmitted(event, poll.options, auth).then(() => {
+                                                    getPieChartData().then((data) => {
+                                                        setPieChartData(data)
+                                                    });
+                                                });
+                                            }
+                                            else navigate('/account');
+                                            }}>
+                                            <div id="pollOptionsWrapper">
+                                                {poll ? getPollRepsonseOptions(poll.options) : <></>}
                                             </div>
-                                        </td>
-                                        <td>
-                                            <div className="filterByWrapper" id="filterByReputationWrapper">
-                                                <button type="button" onClick={() => {
-                                                    if (!pleaseWaitMessage) {
-                                                        setTimerActive(true);
-                                                        setTop5PostsHTML(<h2>Loading...</h2>);
-                                                        filterTopResponsesBy('reputation', auth).then((res) => {
-                                                            setTop5PostsHTML(res)
-                                                        });
-                                                    };
-                                                    }}>
-                                                    <h3 className="noVerticalSpacing">
-                                                        Reputation
-                                                    </h3>
-                                                </button>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div className="filterByWrapper" id="filterByFollowingWrapper">
-                                                <button type="button" onClick={() => {
-                                                    if (!pleaseWaitMessage) {
-                                                        setTimerActive(true);
-                                                        setTop5PostsHTML(<h2>Loading...</h2>);
-                                                        if (!auth) {
-                                                            navigate('/account');
-                                                        }
-                                                        else {
-                                                            filterTopResponsesBy('following', auth).then((res) => {
+    
+                                            <input type="submit" className="submit" value="Submit" id="pollSubmit"></input>
+                                        </form>
+                                        
+                                        {/*pie chart key*/}
+                                        <div id="pieChartKeyWrapper">
+                                            {getPieChartKey(pieChartData)}
+                                        </div>
+                                        
+                                        {/*pie chart*/}
+                                        <div id="pieChartWrapper">
+                                            <PieChart data={pieChartData.data} label={({dataEntry}) => `${dataEntry.percentage === 0 ? '' : Math.round(dataEntry.percentage)+'%'}`} labelStyle={{fontFamily: 'Nunito', fontSize: '4px'}} style={{border: '5px solid #454545', borderRadius: '50%'}} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {/*TOP RESPONSES SECTION*/}
+                                <h2>
+                                    Top responses:
+                                </h2>
+    
+                                {/*filter by...*/}
+                                <p className="noVerticalSpacing">
+                                    {pleaseWaitMessage ? pleaseWaitMessage : 'Filter by:'}
+                                </p>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <td>
+                                                <div className="filterByWrapper activeMode" id="filterByVotesWrapper">
+                                                    <button type="button" onClick={() => {
+                                                        if (!pleaseWaitMessage) {
+                                                            setTimerActive(true);
+                                                            setTop5PostsHTML(<h2>Loading...</h2>);
+                                                            filterTopResponsesBy('votes', auth).then((res) => {
                                                                 setTop5PostsHTML(res);
                                                             });
                                                         };
-                                                    };
-                                                    }}>
-                                                    <h3 className="noVerticalSpacing">
-                                                        Following
-                                                    </h3>
-                                                </button>
-                                            </div>
+                                                        }}>
+                                                        <h3 className="noVerticalSpacing">
+                                                            Votes
+                                                        </h3>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div className="filterByWrapper" id="filterByReputationWrapper">
+                                                    <button type="button" onClick={() => {
+                                                        if (!pleaseWaitMessage) {
+                                                            setTimerActive(true);
+                                                            setTop5PostsHTML(<h2>Loading...</h2>);
+                                                            filterTopResponsesBy('reputation', auth).then((res) => {
+                                                                setTop5PostsHTML(res)
+                                                            });
+                                                        };
+                                                        }}>
+                                                        <h3 className="noVerticalSpacing">
+                                                            Reputation
+                                                        </h3>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div className="filterByWrapper" id="filterByFollowingWrapper">
+                                                    <button type="button" onClick={() => {
+                                                        if (!pleaseWaitMessage) {
+                                                            setTimerActive(true);
+                                                            setTop5PostsHTML(<h2>Loading...</h2>);
+                                                            if (!auth) {
+                                                                navigate('/account');
+                                                            }
+                                                            else {
+                                                                filterTopResponsesBy('following', auth).then((res) => {
+                                                                    setTop5PostsHTML(res);
+                                                                });
+                                                            };
+                                                        };
+                                                        }}>
+                                                        <h3 className="noVerticalSpacing">
+                                                            Following
+                                                        </h3>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                {top5PostsHTML && top5PostsHTML.length > 0 ? top5PostsHTML : <p>No responses available</p>}
+                            </td>
+                        </tr>
+                    </thead>
+                </table>
+            </React.Fragment>
+        );
+    }
+
+    //mobile page
+    else {
+        return (
+            <React.Fragment>
+                <table>
+                    <thead>
+                        <tr>
+                            <td style={{width: '35%'}}>
+                                <h1 style={{paddingTop: '3vh', paddingBottom: 0, marginTop: 0, marginBottom: 0}}>
+                                    Verbose
+                                </h1>
+                            </td>
+                            <td>
+                                {/*account button*/}
+                                <div style={{position: 'absolute', top: 0, right: '5px'}}>
+                                    <Link to='/account'>
+                                    <button type="button">
+                                        <SmartImage imagePath={!auth ? 'interactiveElements/accountIcon.png' : null} imageURL={auth ? userProfilePicture : null} imageStyles={auth ? {height: '20vw', width: '20vw', border: '5px solid #353535', marginRight: '1vw'} : {width: '10vh', height: '10vh'}} imageClasses={auth ? 'growOnHover profilePicture' : 'growOnHover'} />
+                                    </button>
+                                    </Link>
+                                </div>
+                            </td>
+                        </tr>
+                    </thead>
+                </table>
+    
+    
+                <p style={{padding: 0, margin: 0, marginLeft: '15vw'}} className="alignLeft">
+                    Debate and Discussion
+                </p>
+    
+                <div className="dividerLine"></div>
+    
+                {/*TODAY'S QUSETION SECTION*/}
+                <div className="todaysQuestionWrapper">
+                    <h2>
+                        Today's Question:
+                    </h2>
+
+                    <button type="button" onClick={() => {
+                        if (!auth) {
+
+                            //if the user was not logged in, take them to the account page
+                            navigate('/account');
+                        };
+                        document.getElementById('yourResponseWrapper').classList.toggle('shown');
+                    }}>
+                        <h3 style={respondButtonStyle}>
+                            {question}
+                        </h3>
+                    </button>
+                    <div id="yourResponseWrapper">
+                        <form id="yourResponseForm" onSubmit={(event) => {
+                            questionResponseFormSubmitted(event, auth);
+                        }}>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <td style={{width: '90%'}}>
+                                            <p className="noVerticalSpacing" style={{marginBottom: '2vh'}}>
+                                                Your response:
+                                            </p>
+                                            <textarea id="yourResponseText" name="yourResponseText" style={{width: '95%'}} rows="4" required placeholder="Write your response..."></textarea>
+                                        </td>
+                                        <td>
+                                            <label htmlFor="submit">
+                                                <SmartImage imagePath="interactiveElements/sendIcon.png" imageClasses="growOnHover" />
+                                            </label>
+                                            <input type="submit" id="submit" name="submit" value="submit" style={{display: 'none'}}></input>
                                         </td>
                                     </tr>
                                 </thead>
                             </table>
-                            {top5PostsHTML && top5PostsHTML.length > 0 ? top5PostsHTML : <p>No responses available</p>}
-                        </td>
-                    </tr>
-                </thead>
-            </table>
-        </React.Fragment>
-    );
+                        </form>
+                    </div>
+                </div>
+
+                {/*top responses*/}
+                <div>
+                    {/*TOP RESPONSES SECTION*/}
+                    <h2>
+                        Top responses:
+                    </h2>
+
+                    <p className="noVerticalSpacing">
+                        {pleaseWaitMessage ? pleaseWaitMessage : 'Filter by:'}
+                    </p>
+                    <table>
+                        <thead>
+                            <tr>
+                                {/*filter by*/}
+                                <td>
+                                    <div className="filterByWrapper activeMode" id="filterByVotesWrapper">
+                                        <button type="button" className="noHorizontalSpacing" onClick={() => {
+                                            if (!pleaseWaitMessage) {
+                                                setTimerActive(true);
+                                                setTop5PostsHTML(<h2>Loading...</h2>);
+                                                filterTopResponsesBy('votes', auth).then((res) => {
+                                                    setTop5PostsHTML(res);
+                                                });
+                                            };
+                                            }}>
+                                            <h3 className="noVerticalSpacing">
+                                                Votes
+                                            </h3>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div className="filterByWrapper" id="filterByReputationWrapper">
+                                        <button type="button" className="noHorizontalSpacing" onClick={() => {
+                                            if (!pleaseWaitMessage) {
+                                                setTimerActive(true);
+                                                setTop5PostsHTML(<h2>Loading...</h2>);
+                                                filterTopResponsesBy('reputation', auth).then((res) => {
+                                                    setTop5PostsHTML(res)
+                                                });
+                                            };
+                                            }}>
+                                            <h3 className="noVerticalSpacing">
+                                                Reputation
+                                            </h3>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div className="filterByWrapper" id="filterByFollowingWrapper">
+                                        <button type="button" className="noHorizontalSpacing" onClick={() => {
+                                            if (!pleaseWaitMessage) {
+                                                setTimerActive(true);
+                                                setTop5PostsHTML(<h2>Loading...</h2>);
+                                                if (!auth) {
+                                                    navigate('/account');
+                                                }
+                                                else {
+                                                    filterTopResponsesBy('following', auth).then((res) => {
+                                                        setTop5PostsHTML(res);
+                                                    });
+                                                };
+                                            };
+                                            }}>
+                                            <h3 className="noVerticalSpacing">
+                                                Following
+                                            </h3>
+                                        </button>
+                                    </div>
+
+                                </td>
+                            </tr>
+                        </thead>
+                    </table>
+                    {top5PostsHTML && top5PostsHTML.length > 0 ? top5PostsHTML : <p>No responses available</p>}
+                </div>
+    
+    
+                {/*POLL SECTION*/}
+                <div className="todaysQuestionWrapper" id="todaysQuestionPieWrapper">
+                    <h2>
+                        Today's Poll:
+                    </h2>
+
+                    <p className="noVerticalSpacing">
+                        {poll.question ? poll.question : 'No poll available'}
+                    </p>
+                    {/*poll response form*/}
+                    <div id="entirePollAndPieChartWrapper" style={poll.question ? {} : {visibility: 'hidden', display: 'none'}}>
+                        <form id="pollResponseForm" style={pollFormStyles} onSubmit={(event) => {
+                            if (auth) {
+                                pollResponseFormSubmitted(event, poll.options, auth).then(() => {
+                                    getPieChartData().then((data) => {
+                                        setPieChartData(data)
+                                    });
+                                });
+                            }
+                            else navigate('/account');
+                            }}>
+                            <div id="pollOptionsWrapper">
+                                {poll ? getPollRepsonseOptions(poll.options) : <></>}
+                            </div>
+
+                            <input type="submit" className="submit" value="Submit" id="pollSubmit"></input>
+                        </form>
+                        
+                        {/*pie chart*/}
+                        <div id="pieChartWrapper">
+                            <PieChart data={pieChartData.data} label={({dataEntry}) => `${dataEntry.percentage === 0 ? '' : Math.round(dataEntry.percentage)+'%'}`} labelStyle={{fontFamily: 'Nunito', fontSize: '10px'}} style={{border: '5px solid #454545', borderRadius: '50%'}} />
+                        </div>
+                        
+                        {/*pie chart key*/}
+                        <div id="pieChartKeyWrapper">
+                            {getPieChartKey(pieChartData)}
+                        </div> 
+                    </div>
+                </div>
+            </React.Fragment>
+        );
+    }
 };

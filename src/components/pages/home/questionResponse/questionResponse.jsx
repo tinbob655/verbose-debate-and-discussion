@@ -1,12 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {getFirestore, query, where, collection, getDocs, updateDoc, increment, doc, getDoc, arrayUnion} from 'firebase/firestore';
 import { useAuth } from '../../../../context/authContext.jsx';
+import { useIsMobile } from '../../../../context/isMobileContext.jsx';
 import { Link, Navigate } from 'react-router-dom';
 import {changeReputation} from '../../../multi-page/functions/changeReputation.js';
 
 export default function QuestionRespnse({postData, postersUserName}) {
 
     const {auth} = useAuth();
+    const {isMobile} = useIsMobile();
 
     const [greyedOut, setGreyedOut] = useState(false);
     const [autoNav, setAutoNav] = useState(<></>);
@@ -82,7 +84,7 @@ export default function QuestionRespnse({postData, postersUserName}) {
                                 <img src={profilePictureURL} alt={`${username}'s profile`} className="profilePicture growOnHover" />
                             </Link>
                         </td>
-                        <td>
+                        <td style={isMobile ? {width: '20%'} : {}}>
                             <Link to={'/userProfile'} state={{username: postersUserName /*uid goes here*/}} >
                                 {/*POST MAKER'S NAME*/}
                                 <h3 className="noVerticalSpacing alignLeft">
@@ -103,7 +105,7 @@ export default function QuestionRespnse({postData, postersUserName}) {
             <table className="noVerticalSpacing">
                 <thead>
                     <tr>
-                        <td style={{width: '80%'}}>
+                        <td style={isMobile ? {width: '60%'} : {width: '80%'}}>
                             <h2 style={{marginTop: 0, paddingTop: 0, marginBottom: 0, paddingBottom: '2vh', fontSize: '25px'}}>
                                 {userPost}
                             </h2>

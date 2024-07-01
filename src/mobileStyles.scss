@@ -1,0 +1,101 @@
+h1 {
+    font-size: 45px;
+}
+
+h2 {
+    font-size: 30px;
+}
+
+h3 {
+    font-size: 17px;
+}
+
+p {
+    font-size: 15px;
+}
+
+div {
+
+    &.todaysQuestionWrapper {
+        margin-top: 5vh;
+        max-width: 75%;
+    }
+
+    &.filterByWrapper {
+        padding: 0;
+    }
+
+    &.questionResponseWrapper {
+        max-width: 95%;
+    }
+
+    &#todaysQuestionPieWrapper {
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        width: 80%;
+    }
+
+    &#logInContentWrapper {
+        transform: translate(-100vw, 0);
+    
+        &.selected {
+            transform: translate(0vw, 0);
+        }
+    }
+    
+    &#signUpContentWrapper {
+        transform: translate(100vw, 0);
+    
+        &.selected {
+            transform: translate(vw, 0);
+        }
+    }
+
+    &#pollOptionsWrapper {
+        transition-property: margin-left opacity;
+        transition-duration: 1s;
+        transition-timing-function: ease;
+        max-width: 50%;
+        margin-left: 25%;
+    
+        &.afterSubmission {
+            margin-left: 0;
+            opacity: 0;
+            display: none;
+        }
+    }
+
+    &#pieChartWrapper {
+        $pieHeightAndWidth: 60vw;
+        width: $pieHeightAndWidth;
+        height: $pieHeightAndWidth;
+        position: static;
+        display: block;
+        visibility: visible;
+        opacity: 1;
+        margin-bottom: 2vh;
+    }
+
+    &#pollOptionsWrapper {
+        margin-top: 5vw;
+    }
+}
+
+div#logInContentWrapper, div#signUpContentWrapper {
+    transition-property: transform;
+    transition-duration: 1s;
+    transition-timing-function: ease;
+
+    position: absolute;
+    width: 95% !important;
+}
+
+img {
+
+    &.profilePicture {
+        $widthAndHeight: 8vh;
+        width: $widthAndHeight;
+        height: $widthAndHeight;
+    }
+}
