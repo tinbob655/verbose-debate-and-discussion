@@ -1,20 +1,16 @@
-import React, {useState, useEffect} from 'react';
-import { useAuth } from '../../../context/authContext';
+import React, {useState, useEffect, memo} from 'react';
 import QuestionRespnse from '../home/questionResponse/questionResponse';
-import { today } from '../../../index.js';
 import {getFirestore, query, collection, getDocs, orderBy} from 'firebase/firestore';
+import { useIsMobile } from '../../../context/isMobileContext.jsx';
 import { Link } from 'react-router-dom';
 
-export default function AllPosts() {
-
-    const {auth} = useAuth();
+function AllPosts() {
 
     const [quesitonResponses, setQuestionResponses] = useState(<></>);
 
+    const {isMobile} = useIsMobile();
+
     useEffect(() => {
-        const thisDay = today();
-        const allMonths = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
-        const month = allMonths[thisDay.month];
 
         //get all responses from today's question
         let questionResponsesHTML = [];
@@ -23,7 +19,7 @@ export default function AllPosts() {
         getDocs(responsesQuery).then((docs) => {
             docs.forEach((doc) => {
                 questionResponsesHTML.push(
-                <div style={{width: '75%'}}>
+                <div style={isMobile ? {width: '50%'} : {width: '75%'}}>
                     <QuestionRespnse postData={doc.data()} postersUserName={doc.id} />;
                 </div>)
             });
@@ -54,3 +50,5 @@ export default function AllPosts() {
         {quesitonResponses}
     </React.Fragment>
 };
+
+export default memo(AllPosts);

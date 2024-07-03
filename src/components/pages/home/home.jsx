@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, memo} from 'react';
 import {getDoc, doc, getFirestore, getDocs, orderBy, where, limit, query, collection, documentId} from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import SmartImage from '../../multi-page/smartImage.jsx';
@@ -18,7 +18,7 @@ import { getPieChartData } from './functions/getPieChartData.js';
 import { getPieChartKey } from './functions/getPieChartKey.js';
 import { filterTopResponsesBy } from './functions/filterTopResponsesBy.js';
 
-export default function Home() {
+function Home() {
 
     const navigate = useNavigate();
 
@@ -579,3 +579,5 @@ export default function Home() {
         );
     }
 };
+
+export default memo(Home);

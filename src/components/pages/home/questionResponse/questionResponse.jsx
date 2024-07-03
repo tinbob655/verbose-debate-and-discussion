@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, memo} from 'react';
 import {getFirestore, query, where, collection, getDocs, updateDoc, increment, doc, getDoc, arrayUnion} from 'firebase/firestore';
 import { useAuth } from '../../../../context/authContext.jsx';
 import { useIsMobile } from '../../../../context/isMobileContext.jsx';
 import { Link, Navigate } from 'react-router-dom';
 import {changeReputation} from '../../../multi-page/functions/changeReputation.js';
 
-export default function QuestionRespnse({postData, postersUserName}) {
+function QuestionRespnse({postData, postersUserName}) {
 
     const {auth} = useAuth();
     const {isMobile} = useIsMobile();
@@ -196,3 +196,5 @@ export default function QuestionRespnse({postData, postersUserName}) {
         };
     };
 };
+
+export default memo(QuestionRespnse);
