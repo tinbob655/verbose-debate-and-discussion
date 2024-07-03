@@ -19,7 +19,7 @@ function AllPosts() {
         getDocs(responsesQuery).then((docs) => {
             docs.forEach((doc) => {
                 questionResponsesHTML.push(
-                <div style={isMobile ? {width: '50%'} : {width: '75%'}}>
+                <div style={isMobile ? {width: '50%'} : {width: '95%'}}>
                     <QuestionRespnse postData={doc.data()} postersUserName={doc.id} />;
                 </div>)
             });
