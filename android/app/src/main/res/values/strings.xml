@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">verbose</string>
+    <string name="title_activity_main">verbose</string>
+    <string name="package_name">com.verbose.app</string>
+    <string name="custom_url_scheme">com.verbose.app</string>
+</resources>
